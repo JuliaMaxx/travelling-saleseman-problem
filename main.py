@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 
 def parse_tsp(filename):
     with open(filename, "r") as file:
@@ -21,5 +22,11 @@ def parse_tsp(filename):
     df = pd.DataFrame(data, columns=['x', 'y'])
     return df
 
-df = parse_tsp('kroA100.tsp')
+def distance_between(x1, x2, y1, y2):
+    result = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return round(result, 1)
+
+df = parse_tsp('berlin11.tsp')
 print(df)
+res = distance_between(df.iloc[0]['x'], df.iloc[1]['x'], df.iloc[0]['y'], df.iloc[1]['y'])
+print(res)
