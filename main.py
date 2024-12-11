@@ -1,11 +1,12 @@
 import pandas as pd
 import math
+import random
 
 def parse_tsp(filename):
     with open(filename, "r") as file:
         lines = file.readlines()
         
-    # Start of coordinates
+    # Start and end of coordinates
     start_index = lines.index("NODE_COORD_SECTION\n") + 1
     end_index = lines.index("EOF\n")
     
@@ -24,9 +25,15 @@ def parse_tsp(filename):
 
 def distance_between(x1, x2, y1, y2):
     result = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-    return round(result, 1)
+    return round(result, 3)
 
+def random_solution(indexes):
+    random.shuffle(indexes)
+    return indexes
+ 
 df = parse_tsp('berlin11.tsp')
+indexes = df.index.to_list()
+
 print(df)
 res = distance_between(df.iloc[0]['x'], df.iloc[1]['x'], df.iloc[0]['y'], df.iloc[1]['y'])
 print(res)
