@@ -30,7 +30,24 @@ def distance_between(x1, x2, y1, y2):
 def random_solution(indexes):
     random.shuffle(indexes)
     return indexes
- 
+
+def fitness(solution):
+    # [9, 1, 4, 0, 10, 3, 7, 8, 6, 5, 2]
+    total_distance = 0
+    if len(solution) > 1:
+        for i in range(len(solution) - 1):
+            # Calculate indexes
+            current_index = solution[i]
+            next_index = solution[i + 1]
+            
+            # Calculate Distance
+            distance = distance_between(
+                df.iloc[current_index]['x'], df.iloc[next_index]['x'],
+                df.iloc[current_index]['y'], df.iloc[next_index]['y']
+            )
+            total_distance += distance
+    return total_distance
+
 df = parse_tsp('berlin11.tsp')
 indexes = df.index.to_list()
 
