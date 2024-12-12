@@ -46,11 +46,22 @@ def fitness(solution):
                 df.iloc[current_index]['y'], df.iloc[next_index]['y']
             )
             total_distance += distance
-    return total_distance
+    return round(total_distance, 3)
 
+def print_result(solution):
+    for n in solution:
+        if solution.index(n) != (len(solution) - 1):
+            print(n, end=" ⇢  ")
+        else:
+            print(n)
+    total_distance = fitness(solution)
+    print(f"Distance: {total_distance}")
+    
 df = parse_tsp('berlin11.tsp')
 indexes = df.index.to_list()
 
 print(df)
 res = distance_between(df.iloc[0]['x'], df.iloc[1]['x'], df.iloc[0]['y'], df.iloc[1]['y'])
 print(res)
+
+print_result(random_solution(indexes))
