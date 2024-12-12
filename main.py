@@ -57,6 +57,29 @@ def print_result(solution):
     total_distance = fitness(solution)
     print(f"Distance: {total_distance}")
     
+def greedy_solution(starting_point):
+    remaining_indexes = indexes.copy()
+    solution = [starting_point]
+    
+    while len(remaining_indexes) > 1:
+        remaining_indexes.remove(starting_point)   
+        shortest_distance = float('inf')
+        next_city = -1
+        
+        for i in remaining_indexes:
+            distance = distance_between(
+                df.iloc[i]['x'], df.iloc[starting_point]['x'],
+                df.iloc[i]['y'], df.iloc[starting_point]['y']
+                )
+            if distance < shortest_distance:
+                shortest_distance = distance
+                next_city = i
+                
+        solution.append(next_city)
+        starting_point = next_city 
+    return solution
+        
+    
 df = parse_tsp('berlin11.tsp')
 indexes = df.index.to_list()
 
@@ -64,4 +87,4 @@ print(df)
 res = distance_between(df.iloc[0]['x'], df.iloc[1]['x'], df.iloc[0]['y'], df.iloc[1]['y'])
 print(res)
 
-print_result(random_solution(indexes))
+print_result(greedy_solution(9))
