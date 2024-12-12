@@ -93,11 +93,17 @@ def find_the_best():
             shortest = distance
             city = i
     return city
-                
+
+def average_of_100_random():
+    total = 0
+    for _ in range(100):
+        random_sol = random_solution(indexes)
+        total += fitness(random_sol)         
+    return round(total / 100, 3)      
     
 df = parse_tsp('berlin11.tsp')
 indexes = df.index.to_list()
 
 print(df)
-print_result(random_solution(indexes))
-print(find_the_best())
+print_result(greedy_solution(find_the_best()))
+print(average_of_100_random())
