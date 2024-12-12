@@ -28,8 +28,12 @@ def distance_between(x1, x2, y1, y2):
     return round(result, 3)
 
 def random_solution(indexes):
-    random.shuffle(indexes)
-    return indexes
+   shuffled_indexes = indexes.copy()
+   random.shuffle(shuffled_indexes)
+   
+   # Ensure the solution returns to the starting city
+   shuffled_indexes.append(shuffled_indexes[0])
+   return shuffled_indexes
 
 def fitness(solution):
     # [9, 1, 4, 0, 10, 3, 7, 8, 6, 5, 2]
@@ -49,13 +53,13 @@ def fitness(solution):
     return round(total_distance, 3)
 
 def print_result(solution):
-    for n in solution:
-        if solution.index(n) != (len(solution) - 1):
-            print(n, end=" ⇢  ")
+    for i, city in enumerate(solution):
+        if i < len(solution) - 1:
+            print(city, end=" ⇢  ")
         else:
-            print(n)
+            print(city)
     total_distance = fitness(solution)
-    print(f"Distance: {total_distance}")
+    print(f"Total Distance: {total_distance}")
     
 def greedy_solution(starting_point):
     remaining_indexes = indexes.copy()
@@ -77,6 +81,7 @@ def greedy_solution(starting_point):
                 
         solution.append(next_city)
         starting_point = next_city 
+    solution.append(solution[0])
     return solution
         
     
@@ -84,7 +89,5 @@ df = parse_tsp('berlin11.tsp')
 indexes = df.index.to_list()
 
 print(df)
-res = distance_between(df.iloc[0]['x'], df.iloc[1]['x'], df.iloc[0]['y'], df.iloc[1]['y'])
-print(res)
-
 print_result(greedy_solution(9))
+print_result(random_solution(indexes))
