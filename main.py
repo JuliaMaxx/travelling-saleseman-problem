@@ -83,11 +83,21 @@ def greedy_solution(starting_point):
         starting_point = next_city 
     solution.append(solution[0])
     return solution
-        
+ 
+def find_the_best():
+    shortest = float('inf')
+    city = 0
+    for i in indexes:
+        distance = fitness(greedy_solution(i))
+        if distance < shortest:
+            shortest = distance
+            city = i
+    return city
+                
     
 df = parse_tsp('berlin11.tsp')
 indexes = df.index.to_list()
 
 print(df)
-print_result(greedy_solution(9))
 print_result(random_solution(indexes))
+print(find_the_best())
