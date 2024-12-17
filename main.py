@@ -63,6 +63,8 @@ def print_result(solution):
     
 def greedy_solution(starting_point):
     remaining_indexes = indexes.copy()
+    
+    # Add starting point as the fist city in the solution
     solution = [starting_point]
     
     while len(remaining_indexes) > 1:
@@ -70,6 +72,7 @@ def greedy_solution(starting_point):
         shortest_distance = float('inf')
         next_city = -1
         
+        # Calculate what is the closest city to the current one
         for i in remaining_indexes:
             distance = distance_between(
                 df.iloc[i]['x'], df.iloc[starting_point]['x'],
@@ -84,6 +87,7 @@ def greedy_solution(starting_point):
     solution.append(solution[0])
     return solution
  
+# Find what is the best city to start from 
 def find_the_best():
     shortest = float('inf')
     city = 0
@@ -94,6 +98,7 @@ def find_the_best():
             city = i
     return city
 
+# Find the avegrage result of 100 random solutions
 def average_of_100_random():
     total = 0
     for _ in range(100):
