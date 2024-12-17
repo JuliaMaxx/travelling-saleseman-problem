@@ -101,7 +101,7 @@ def average_of_100_random():
         total += fitness(random_sol)         
     return round(total / 100, 3)      
     
-df = parse_tsp('berlin11.tsp')
+df = parse_tsp('berlin52.tsp')
 indexes = df.index.to_list()
 
 print(df)
