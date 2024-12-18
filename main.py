@@ -99,16 +99,16 @@ def find_the_best():
     return city
 
 # Find the avegrage result of 100 random solutions
-def average_of_100_random():
+def average_of_random(amount):
     total = 0
-    for _ in range(100):
+    for _ in range(amount):
         random_sol = random_solution(indexes)
         total += fitness(random_sol)         
-    return round(total / 100, 3)      
+    return round(total / amount, 3)      
     
 df = parse_tsp('berlin52.tsp')
 indexes = df.index.to_list()
 
 print(df)
 print_result(greedy_solution(find_the_best()))
-print(average_of_100_random())
+print(average_of_random(100))
