@@ -108,8 +108,28 @@ def average_of_random(amount):
         random_sol = random_solution()
         total += fitness(random_sol)         
     return round(total / amount, 3)      
+
+# Genetic algorithm
+def initial_population(size, greedy_ratio=0.2):
+    population = []
+    
+    # How many there should be of greedy and random solutions
+    size_greedy = int(size * greedy_ratio)
+    print(size_greedy)
+    size_random = size - size_greedy
+    
+    for _ in range(size_greedy):
+        starting_point = random.choice(INDEXES)
+        population.append(greedy_solution(starting_point))
+        
+    for _ in range(size_random):
+        population.append(random_solution())
+        
+    random.shuffle(population)
+    return population
     
 
 print(DF)
 print_result(greedy_solution(find_the_best()))
 print(average_of_random(100))
+print(initial_population(12, 0.2))
