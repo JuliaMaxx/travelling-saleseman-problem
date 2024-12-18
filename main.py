@@ -115,7 +115,6 @@ def initial_population(size, greedy_ratio=0.2):
     
     # How many there should be of greedy and random solutions
     size_greedy = int(size * greedy_ratio)
-    print(size_greedy)
     size_random = size - size_greedy
     
     for _ in range(size_greedy):
@@ -127,9 +126,28 @@ def initial_population(size, greedy_ratio=0.2):
         
     random.shuffle(population)
     return population
+
+def population_info(population):
+    size = len(population)
+    # Find the best, worst and average distance
+    best_distance =  float('inf')
+    worst_distance =  float('-inf')
+    total_distance = 0
+    for solution in population:
+        distance = fitness(solution)
+        total_distance += distance
+        if distance < best_distance:
+            best_distance = distance
+        if distance > worst_distance:
+            worst_distance = distance
+    average_distance = round(total_distance / size, 3)
+    print(f"Population size: {size}")
+    print(f"Best distance: {best_distance}")
+    print(f"Worst distance: {worst_distance}")
+    print(f"Average distance: {average_distance}")
     
 
-print(DF)
-print_result(greedy_solution(find_the_best()))
-print(average_of_random(100))
-print(initial_population(12, 0.2))
+# print(DF)
+# print_result(greedy_solution(find_the_best()))
+# print(average_of_random(100))
+population_info(initial_population(50, 0.2))
