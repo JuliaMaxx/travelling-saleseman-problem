@@ -65,18 +65,18 @@ def print_result(solution):
     print(f"Total Distance: {total_distance}")
     
 def greedy_solution(starting_point):
-    remaining_INDEXES = INDEXES.copy()
+    remaining_indexes = INDEXES.copy()
     
     # Add starting point as the fist city in the solution
     solution = [starting_point]
     
-    while len(remaining_INDEXES) > 1:
-        remaining_INDEXES.remove(starting_point)   
+    while len(remaining_indexes) > 1:
+        remaining_indexes.remove(starting_point)   
         shortest_distance = float('inf')
         next_city = -1
         
         # Calculate what is the closest city to the current one
-        for i in remaining_INDEXES:
+        for i in remaining_indexes:
             distance = distance_between(
                 DF.iloc[i]['x'], DF.iloc[starting_point]['x'],
                 DF.iloc[i]['y'], DF.iloc[starting_point]['y']
@@ -147,9 +147,13 @@ def population_info(population):
     print(f"Average distance: {average_distance}")
     
 def tournament(population, tournament_size):
+    # Take a random sample out of population 
     contestants = random.sample(population, tournament_size)
+    
     best_distance = float("inf")
     winner = []
+    
+    # Determine the best one out of the sample
     for contestant in contestants:
        distance = fitness(contestant)
        if  distance < best_distance:
@@ -158,22 +162,34 @@ def tournament(population, tournament_size):
     return winner 
 
 def ordered_crossover(parent1,  parent2):
+    # Remove last city since it's the same as the first
     parent1 = parent1[:-1]
     parent2 = parent2[:-1]
+    
+    # Make a list of the same size as parents
     offspring = [None] * len(parent1)
+    
+    # Take a random slice from parent 1
     start_position = random.randint(0, len(parent1) - 1)
     end_position = random.randint(0, len(parent1) - 1)
     if start_position > end_position:
         start_position, end_position = end_position, start_position
     sub_parent1 = parent1[start_position:end_position]
+    
+    # Take all the numbers from parent 2 that were not taken yet
     sub_parent2 = [x for x in parent2 if x not in sub_parent1]
+    
+    # Set numbers from parent 1 in the same position in offspring
     offspring[start_position:end_position] = sub_parent1
+    
+    # Fill up all the gaps with numbers from parent 2
     index = 0
     for i in range(len(offspring)):
         if offspring[i] is None:
             if index < len(sub_parent2):
                 offspring[i] = sub_parent2[index] 
                 index += 1 
+                
     offspring.append(offspring[0])
     return offspring
 
