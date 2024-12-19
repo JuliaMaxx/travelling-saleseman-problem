@@ -157,7 +157,27 @@ def tournament(population, tournament_size):
            winner = contestant
     return winner 
 
+def ordered_crossover(parent1,  parent2):
+    parent1 = parent1[:-1]
+    parent2 = parent2[:-1]
+    offspring = [None] * len(parent1)
+    start_position = random.randint(0, len(parent1) - 1)
+    end_position = random.randint(0, len(parent1) - 1)
+    if start_position > end_position:
+        start_position, end_position = end_position, start_position
+    sub_parent1 = parent1[start_position:end_position]
+    sub_parent2 = [x for x in parent2 if x not in sub_parent1]
+    offspring[start_position:end_position] = sub_parent1
+    index = 0
+    for i in range(len(offspring)):
+        if offspring[i] is None:
+            if index < len(sub_parent2):
+                offspring[i] = sub_parent2[index] 
+                index += 1 
+    offspring.append(offspring[0])
+    return offspring
+
 population = initial_population(50, 0.2)
-winner = tournament(population, 6)
-print(winner)
-print(fitness(winner))
+child = ordered_crossover(tournament(population, 6), tournament(population, 6))
+print(child)
+print(fitness(child))
