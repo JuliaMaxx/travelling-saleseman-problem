@@ -146,8 +146,18 @@ def population_info(population):
     print(f"Worst distance: {worst_distance}")
     print(f"Average distance: {average_distance}")
     
+def tournament(population, tournament_size):
+    contestants = random.sample(population, tournament_size)
+    best_distance = float("inf")
+    winner = []
+    for contestant in contestants:
+       distance = fitness(contestant)
+       if  distance < best_distance:
+           best_distance = distance
+           winner = contestant
+    return winner 
 
-# print(DF)
-# print_result(greedy_solution(find_the_best()))
-# print(average_of_random(100))
-population_info(initial_population(50, 0.2))
+population = initial_population(50, 0.2)
+winner = tournament(population, 6)
+print(winner)
+print(fitness(winner))
