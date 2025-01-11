@@ -193,7 +193,26 @@ def ordered_crossover(parent1,  parent2):
     offspring.append(offspring[0])
     return offspring
 
+def mutation(probability, child):
+    solution = child.copy()
+    if random.random() <= probability:
+        # Get two random cities in the solution
+        first_city_index = random.randint(0, len(solution) - 2)
+        second_city_index = random.randint(0, len(solution) - 2)
+        first_city = solution[first_city_index]
+        second_city = solution[second_city_index]
+        
+        # Swap those two cities places
+        solution[first_city_index] = second_city
+        solution[second_city_index] = first_city
+    return solution
+
 population = initial_population(50, 0.2)
 child = ordered_crossover(tournament(population, 6), tournament(population, 6))
+mutated_child = mutation(0.5, child)
+
 print(child)
 print(fitness(child))
+
+print(mutated_child)
+print(fitness(mutated_child))
