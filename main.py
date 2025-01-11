@@ -207,12 +207,38 @@ def mutation(probability, child):
         solution[second_city_index] = first_city
     return solution
 
+def create_n_epochs(initial_population, number_of_epochs):
+    n = 1
+    population = initial_population
+    print(f"Epoch {n}")
+    population_info(population)
+    
+    while n < number_of_epochs:
+        new_population = []
+        while len(new_population) < len(population):
+            # Select parents
+            parent1, parent2 = None, None
+            while parent1 == parent2:
+                parent1 = tournament(population, 5)
+                parent2 = tournament(population, 5)
+            
+            # Perform crossover
+            child = ordered_crossover(parent1, parent2)
+            
+            # Apply mutation
+            mutated_child = mutation(0.2, child)
+            
+            # Add to the new population
+            new_population.append(mutated_child)
+        
+        # Update for the next epoch
+        population = new_population
+        n += 1
+        print(f"\nEpoch {n}")
+        population_info(population)
+    return population
+
+    
+
 population = initial_population(50, 0.2)
-child = ordered_crossover(tournament(population, 6), tournament(population, 6))
-mutated_child = mutation(0.5, child)
-
-print(child)
-print(fitness(child))
-
-print(mutated_child)
-print(fitness(mutated_child))
+last_population = create_n_epochs(population, 10)
