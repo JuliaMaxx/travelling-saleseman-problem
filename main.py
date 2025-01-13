@@ -161,6 +161,26 @@ def tournament(population, tournament_size):
            winner = contestant
     return winner 
 
+def elite_selection(population, elite_size):
+    elite = []
+    for solution in population:
+        solution_fitness = fitness(solution)
+        
+        # If there is no initial elite
+        if len(elite) < elite_size:
+            elite.append((solution, solution_fitness))
+        else:
+            # Find the worst solution currently in elite
+            longest_in_elite = max(elite, key=lambda x:x[1])
+            
+            # If current solution is better than the one in elite - replace it
+            if solution_fitness < longest_in_elite[1]:
+                index_of_longest = elite.index(longest_in_elite)
+                elite[index_of_longest] = (solution, solution_fitness)
+                
+    # return only solutions with no distances
+    return [x[0] for x in elite]
+
 def ordered_crossover(parent1,  parent2):
     # Remove last city since it's the same as the first
     parent1 = parent1[:-1]
