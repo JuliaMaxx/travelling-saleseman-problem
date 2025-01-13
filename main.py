@@ -227,7 +227,7 @@ def mutation(probability, child):
         solution[second_city_index] = first_city
     return solution
 
-def create_n_epochs(initial_population, number_of_epochs):
+def create_n_epochs(initial_population, number_of_epochs, elitism):
     n = 1
     population = initial_population
     print(f"Epoch {n}")
@@ -235,6 +235,9 @@ def create_n_epochs(initial_population, number_of_epochs):
     
     while n < number_of_epochs:
         new_population = []
+        if elitism:
+            elite = elite_selection(population, 2)
+            new_population.extend(elite)
         while len(new_population) < len(population):
             # Select parents
             parent1, parent2 = None, None
@@ -249,7 +252,8 @@ def create_n_epochs(initial_population, number_of_epochs):
             mutated_child = mutation(0.2, child)
             
             # Add to the new population
-            new_population.append(mutated_child)
+            if mutated_child not in new_population:
+                new_population.append(mutated_child)
         
         # Update for the next epoch
         population = new_population
@@ -258,7 +262,7 @@ def create_n_epochs(initial_population, number_of_epochs):
         population_info(population)
     return population
 
-    
+
 
 population = initial_population(50, 0.2)
-last_population = create_n_epochs(population, 10)
+last_population = create_n_epochs(population, 10, True)
