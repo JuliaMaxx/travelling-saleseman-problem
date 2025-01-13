@@ -39,7 +39,6 @@ def random_solution():
    return shuffled_INDEXES
 
 def fitness(solution):
-    # [9, 1, 4, 0, 10, 3, 7, 8, 6, 5, 2]
     total_distance = 0
     if len(solution) > 1:
         for i in range(len(solution) - 1):
@@ -110,7 +109,7 @@ def average_of_random(amount):
     return round(total / amount, 3)      
 
 # Genetic algorithm
-def initial_population(size, greedy_ratio=0.2):
+def initial_population(size, greedy_ratio):
     population = []
     
     # How many there should be of greedy and random solutions
@@ -213,9 +212,9 @@ def ordered_crossover(parent1,  parent2):
     offspring.append(offspring[0])
     return offspring
 
-def mutation(probability, child):
+def mutation(mutation_probability, child):
     solution = child.copy()
-    if random.random() <= probability:
+    if random.random() <= mutation_probability:
         # Get two random cities in the solution
         first_city_index = random.randint(0, len(solution) - 2)
         second_city_index = random.randint(0, len(solution) - 2)
@@ -227,7 +226,7 @@ def mutation(probability, child):
         solution[second_city_index] = first_city
     return solution
 
-def create_n_epochs(initial_population, number_of_epochs, elitism):
+def create_n_epochs(initial_population, number_of_epochs, mutation_probability, tournament_size, elitism, elite_size):
     n = 1
     population = initial_population
     print(f"Epoch {n}")
@@ -236,20 +235,20 @@ def create_n_epochs(initial_population, number_of_epochs, elitism):
     while n < number_of_epochs:
         new_population = []
         if elitism:
-            elite = elite_selection(population, 2)
+            elite = elite_selection(population, elite_size)
             new_population.extend(elite)
         while len(new_population) < len(population):
             # Select parents
             parent1, parent2 = None, None
             while parent1 == parent2:
-                parent1 = tournament(population, 5)
-                parent2 = tournament(population, 5)
+                parent1 = tournament(population, tournament_size)
+                parent2 = tournament(population, tournament_size)
             
             # Perform crossover
             child = ordered_crossover(parent1, parent2)
             
             # Apply mutation
-            mutated_child = mutation(0.2, child)
+            mutated_child = mutation(mutation_probability, child)
             
             # Add to the new population
             if mutated_child not in new_population:
@@ -265,4 +264,4 @@ def create_n_epochs(initial_population, number_of_epochs, elitism):
 
 
 population = initial_population(50, 0.2)
-last_population = create_n_epochs(population, 10, True)
+last_population = create_n_epochs(population, 10, 0.2, 5, True, 2)
