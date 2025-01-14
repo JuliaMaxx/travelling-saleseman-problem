@@ -230,6 +230,37 @@ def ordered_crossover(parent1,  parent2):
     offspring.append(offspring[0])
     return offspring
 
+def partially_matched_crossover(parent1, parent2):
+    # Remove the last city for TSP if necessary
+    parent1 = parent1[:-1]
+    parent2 = parent2[:-1]
+    
+    # Create an empty offspring
+    offspring = [None] * len(parent1)
+    
+    # Randomly select crossover points
+    start, end = sorted(random.sample(range(len(parent1)), 2))
+    
+    # Copy the subsection from Parent 1 to the offspring
+    offspring[start:end] = parent1[start:end]
+    
+    # Create mappings for the crossover segment
+    mapping = {parent1[i]: parent2[i] for i in range(start, end)}
+    
+    # Fill the remaining positions
+    for i in range(len(parent2)):
+        if offspring[i] is None:
+            value = parent2[i]
+            while value in mapping and value in offspring:
+                value = mapping[value]
+            offspring[i] = value
+    
+    # Re-add the first city
+    offspring.append(offspring[0])
+    
+    return offspring
+
+
 def mutation(mutation_probability, child):
     solution = child.copy()
     if random.random() <= mutation_probability:
@@ -270,7 +301,7 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
             parent1, parent2 = select_parents(population, roulette, tournament_size)
             
             # Perform crossover
-            child = ordered_crossover(parent1, parent2)
+            child = partially_matched_crossover(parent1, parent2)
             
             # Apply mutation
             mutated_child = mutation(mutation_probability, child)
@@ -292,4 +323,4 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
 
 
 population = initial_population(50, 0.2)
-last_population = create_n_epochs(population, 10, 0.2, True, 5, True, 2)
+last_population = create_n_epochs(population, 10, 0.2, False, 5, True, 2)
