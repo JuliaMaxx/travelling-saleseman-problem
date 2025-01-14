@@ -232,8 +232,8 @@ def mutation(mutation_probability, child):
     solution = child.copy()
     if random.random() <= mutation_probability:
         # Get two random cities in the solution
-        first_city_index = random.randint(0, len(solution) - 2)
-        second_city_index = random.randint(0, len(solution) - 2)
+        first_city_index = random.randint(1, len(solution) - 2)
+        second_city_index = random.randint(1, len(solution) - 2)
         first_city = solution[first_city_index]
         second_city = solution[second_city_index]
         
