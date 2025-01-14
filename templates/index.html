@@ -9,9 +9,15 @@
 </head>
 <body>
     <main>
-        <nav></nav>
-        <div id="main-content"></div>
+        <nav>
+            <input type="range" id="pointRange" min="1" max="100" value="10" step="1">
+            <span id="pointCount">10</span>
+        </nav>
+        <div id="mainContent" class="main-content">
+            <div id="canvas"></div>
+        </div>
     </main>
     <footer></footer>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 </body>
 </html>

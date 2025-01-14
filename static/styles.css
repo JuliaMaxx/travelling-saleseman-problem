@@ -1,3 +1,4 @@
+/* MAIN */
 body {
     margin: 0;
     background-color: rgb(40, 53, 39);
@@ -9,12 +10,33 @@ main {
     height: 100vh;
 }
 
+
+/* NAVIGATION */
 nav {
     background-color: rgb(80, 97, 80);
     height: 100%;
     width: 450px;
 }
 
+
+/* CANVAS */
 .main-content{
     flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#canvas {
+    width: 1200px;
+    height: 750px;
+    position: relative;  
+}
+
+.point {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgb(212, 198, 198);
+    border-radius: 50%;
 }
