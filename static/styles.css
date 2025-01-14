@@ -32,11 +32,3 @@ nav {
     height: 750px;
     position: relative;  
 }
-
-.point {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: rgb(212, 198, 198);
-    border-radius: 50%;
-}
