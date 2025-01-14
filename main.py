@@ -180,6 +180,22 @@ def elite_selection(population, elite_size):
     # return only solutions with no distances
     return [x[0] for x in elite]
 
+def roulette_selection(population):
+    # Calculate fitness for each solution
+    distances = [fitness(solution) for solution in population]
+    distance_of_all = sum(distances)
+    
+    # Calculate relative distance for each solution
+    relative_distances = [distance / distance_of_all for distance in distances]
+    
+    # Calclucalte cumulative distances aka divide the wheel into segments
+    cumulative_distances = [sum(relative_distances[:i+1]) for i in range(len(relative_distances))]
+    
+    rand = random.random()
+    for i, cd in enumerate(cumulative_distances):
+        if rand <= cd:
+            return population[i]
+
 def ordered_crossover(parent1,  parent2):
     # Remove last city since it's the same as the first
     parent1 = parent1[:-1]
