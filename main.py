@@ -242,7 +242,7 @@ def mutation(mutation_probability, child):
         solution[second_city_index] = first_city
     return solution
 
-def create_n_epochs(initial_population, number_of_epochs, mutation_probability, tournament_size, elitism, elite_size):
+def create_n_epochs(initial_population, number_of_epochs, mutation_probability, roulette, tournament_size, elitism, elite_size):
     n = 1
     population = initial_population
     print(f"Epoch {n}")
@@ -257,8 +257,12 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
             # Select parents
             parent1, parent2 = None, None
             while parent1 == parent2:
-                parent1 = tournament(population, tournament_size)
-                parent2 = tournament(population, tournament_size)
+                if roulette:
+                    parent1 = roulette_selection(population)
+                    parent2 = roulette_selection(population)
+                else:
+                    parent1 = tournament(population, tournament_size)
+                    parent2 = tournament(population, tournament_size)
             
             # Perform crossover
             child = ordered_crossover(parent1, parent2)
@@ -280,4 +284,4 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
 
 
 population = initial_population(50, 0.2)
-last_population = create_n_epochs(population, 10, 0.2, 5, True, 2)
+last_population = create_n_epochs(population, 10, 0.2, True, 5, True, 2)
