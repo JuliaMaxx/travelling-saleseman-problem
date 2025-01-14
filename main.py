@@ -314,7 +314,7 @@ def select_parents(population, roulette, tournament_size):
         return random.sample([roulette_selection(population) for _ in range(2)], 2)
     return random.sample([tournament(population, tournament_size) for _ in range(2)], 2)
 
-def create_n_epochs(initial_population, number_of_epochs, mutation_probability, roulette, tournament_size, elitism, elite_size):
+def create_n_epochs(initial_population, crossover, number_of_epochs, mutation_probability, roulette, tournament_size, elitism, elite_size):
     n = 1
     population = initial_population
     
@@ -334,8 +334,14 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
             # Select parents
             parent1, parent2 = select_parents(population, roulette, tournament_size)
             
-            # Perform crossover
-            child = cycle_crossover(parent1, parent2)
+            # Perform chosen crossover
+            match crossover:
+                case 1:  
+                    child = ordered_crossover(parent1, parent2)
+                case 2:  
+                    child = partially_matched_crossover(parent1, parent2)
+                case 3:  
+                    child = cycle_crossover(parent1, parent2)
             
             # Apply mutation
             mutated_child = mutation(mutation_probability, child)
@@ -357,4 +363,4 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
 
 
 population = initial_population(50, 0.2)
-last_population = create_n_epochs(population, 10, 0.2, False, 5, True, 2)
+last_population = create_n_epochs(population, 1, 10, 0.2, False, 5, True, 2)
