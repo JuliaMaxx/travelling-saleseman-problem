@@ -295,7 +295,7 @@ def cycle_crossover(parent1, parent2):
 
     return offspring
 
-def mutation(mutation_probability, child):
+def mutation_swap(mutation_probability, child):
     solution = child.copy()
     if random.random() <= mutation_probability:
         # Get two random cities in the solution
@@ -309,12 +309,29 @@ def mutation(mutation_probability, child):
         solution[second_city_index] = first_city
     return solution
 
+import random
+
+def mutation_inversion(mutation_probability, child):
+    solution = child.copy()
+    if random.random() <= mutation_probability:
+        # Get two random cities in the solution
+        first_index = random.randint(1, len(solution) - 2)
+        last_index = random.randint(1, len(solution) - 2)
+
+        # Ensure first_index is less than last_index
+        if first_index > last_index:
+            first_index, last_index = last_index, first_index
+
+        # Invert the range
+        solution[first_index:last_index] = solution[first_index:last_index][::-1]
+    return solution
+
 def select_parents(population, roulette, tournament_size):
     if roulette:
         return random.sample([roulette_selection(population) for _ in range(2)], 2)
     return random.sample([tournament(population, tournament_size) for _ in range(2)], 2)
 
-def create_n_epochs(initial_population, crossover, number_of_epochs, mutation_probability, roulette, tournament_size, elitism, elite_size):
+def create_n_epochs(initial_population, crossover, number_of_epochs, inversion, mutation_probability, roulette, tournament_size, elitism, elite_size):
     n = 1
     population = initial_population
     
@@ -343,8 +360,11 @@ def create_n_epochs(initial_population, crossover, number_of_epochs, mutation_pr
                 case 3:  
                     child = cycle_crossover(parent1, parent2)
             
-            # Apply mutation
-            mutated_child = mutation(mutation_probability, child)
+            # Apply chosen mutation
+            if inversion:
+                mutated_child = mutation_inversion(mutation_probability, child)
+            else:
+                mutated_child = mutation_swap(mutation_probability, child)
             
             # Add to the new population
             if tuple(mutated_child) not in existing_individuals:
@@ -363,4 +383,4 @@ def create_n_epochs(initial_population, crossover, number_of_epochs, mutation_pr
 
 
 population = initial_population(50, 0.2)
-last_population = create_n_epochs(population, 1, 10, 0.2, False, 5, True, 2)
+last_population = create_n_epochs(population, 1, 10, True, 0.2, False, 5, True, 2)
