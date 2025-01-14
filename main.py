@@ -231,7 +231,7 @@ def ordered_crossover(parent1,  parent2):
     return offspring
 
 def partially_matched_crossover(parent1, parent2):
-    # Remove the last city for TSP if necessary
+    # Remove the last city
     parent1 = parent1[:-1]
     parent2 = parent2[:-1]
     
@@ -260,6 +260,40 @@ def partially_matched_crossover(parent1, parent2):
     
     return offspring
 
+def cycle_crossover(parent1, parent2):
+    # Remove last city (usually a dummy city to complete the tour)
+    parent1 = parent1[:-1]
+    parent2 = parent2[:-1]
+    
+    # Initialize offspring with None
+    offspring = [None] * len(parent1)
+    
+    # Mark positions to visit
+    visited = [False] * len(parent1)
+    
+    # Cycle crossover
+    start = random.randint(0, len(parent1) - 1)  # Start point for the cycle
+    cycle_start = start
+    
+    while None in offspring:  # Continue until all positions are filled
+        current = cycle_start
+        # Follow the cycle until we return to the start
+        while not visited[current]:
+            visited[current] = True
+            # Place the element from parent1 in the offspring
+            offspring[current] = parent1[current]
+            # Move to the corresponding position in Parent 2
+            current = parent2.index(parent1[current])
+        
+        # If any positions remain unfilled, swap to Parent 2
+        for i in range(len(offspring)):
+            if offspring[i] is None:
+                offspring[i] = parent2[i]
+
+    # Re-add the first city to complete the loop
+    offspring.append(offspring[0])
+
+    return offspring
 
 def mutation(mutation_probability, child):
     solution = child.copy()
@@ -301,7 +335,7 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
             parent1, parent2 = select_parents(population, roulette, tournament_size)
             
             # Perform crossover
-            child = partially_matched_crossover(parent1, parent2)
+            child = cycle_crossover(parent1, parent2)
             
             # Apply mutation
             mutated_child = mutation(mutation_probability, child)
