@@ -1,3 +1,20 @@
-h1 {
-    color: red;
+body {
+    margin: 0;
+    background-color: rgb(40, 53, 39);
+    background-size: cover;
+}
+
+main {
+    display: flex;
+    height: 100vh;
+}
+
+nav {
+    background-color: rgb(80, 97, 80);
+    height: 100%;
+    width: 450px;
+}
+
+.main-content{
+    flex-grow: 1;
 }
