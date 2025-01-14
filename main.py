@@ -1,6 +1,7 @@
 import pandas as pd
 import math
 import random
+import bisect
 
 def parse_tsp(filename):
     with open(filename, "r") as file:
@@ -185,16 +186,17 @@ def roulette_selection(population):
     distances = [fitness(solution) for solution in population]
     distance_of_all = sum(distances)
     
-    # Calculate relative distance for each solution
-    relative_distances = [distance / distance_of_all for distance in distances]
+    # Calculate cumulative probabilities in one step
+    cumulative_distances = []
+    cumulative_sum = 0
+    for distance in distances:
+        cumulative_sum += distance / distance_of_all
+        cumulative_distances.append(cumulative_sum)
     
-    # Calclucalte cumulative distances aka divide the wheel into segments
-    cumulative_distances = [sum(relative_distances[:i+1]) for i in range(len(relative_distances))]
-    
+    # Use binary search for faster selection
     rand = random.random()
-    for i, cd in enumerate(cumulative_distances):
-        if rand <= cd:
-            return population[i]
+    index = bisect.bisect_left(cumulative_distances, rand)
+    return population[index]
 
 def ordered_crossover(parent1,  parent2):
     # Remove last city since it's the same as the first
@@ -242,27 +244,30 @@ def mutation(mutation_probability, child):
         solution[second_city_index] = first_city
     return solution
 
+def select_parents(population, roulette, tournament_size):
+    if roulette:
+        return random.sample([roulette_selection(population) for _ in range(2)], 2)
+    return random.sample([tournament(population, tournament_size) for _ in range(2)], 2)
+
 def create_n_epochs(initial_population, number_of_epochs, mutation_probability, roulette, tournament_size, elitism, elite_size):
     n = 1
     population = initial_population
+    
     print(f"Epoch {n}")
     population_info(population)
     
     while n < number_of_epochs:
         new_population = []
+        existing_individuals = set(new_population)
+        
         if elitism:
             elite = elite_selection(population, elite_size)
             new_population.extend(elite)
+            existing_individuals.update(tuple(ind) for ind in elite)
+            
         while len(new_population) < len(population):
             # Select parents
-            parent1, parent2 = None, None
-            while parent1 == parent2:
-                if roulette:
-                    parent1 = roulette_selection(population)
-                    parent2 = roulette_selection(population)
-                else:
-                    parent1 = tournament(population, tournament_size)
-                    parent2 = tournament(population, tournament_size)
+            parent1, parent2 = select_parents(population, roulette, tournament_size)
             
             # Perform crossover
             child = ordered_crossover(parent1, parent2)
@@ -271,14 +276,17 @@ def create_n_epochs(initial_population, number_of_epochs, mutation_probability, 
             mutated_child = mutation(mutation_probability, child)
             
             # Add to the new population
-            if mutated_child not in new_population:
+            if tuple(mutated_child) not in existing_individuals:
                 new_population.append(mutated_child)
+                existing_individuals.add(tuple(mutated_child))
         
         # Update for the next epoch
         population = new_population
         n += 1
+        
         print(f"\nEpoch {n}")
         population_info(population)
+        
     return population
 
 
