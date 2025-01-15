@@ -15,6 +15,14 @@
         <nav>
             <input type="range" id="pointRange" min="1" max="100" value="10" step="1">
             <span id="pointCount">10</span>
+            <form id="algorithmForm">
+                <label for="algorithmSelect">Choose Algorithm:</label>
+                <select id="algorithmSelect" name="algorithm">
+                    <option value="greedy">Greedy</option>
+                    <option value="random">Random</option>
+                    <option value="genetic">Genetic</option>
+                </select>
+            </form>
             <button id="calculate">Calculate</button>
         </nav>
         <div id="mainContent" class="main-content">

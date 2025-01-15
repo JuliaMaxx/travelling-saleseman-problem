@@ -20,11 +20,12 @@ def handle_points(data):
     POINTS = [{'x': random.randint(50, 1150), 'y': random.randint(50, 650)} for _ in range(num_points)]
     emit('receive_points', {'points': POINTS})
     
-# Event to start the greedy algorithm
-@socketio.on('start_greedy')
+# Event to start the selected algorithm
+@socketio.on('start_algorithm')
 def start_greedy_algorithm(data):
-    starting_point = data['startingPoint']
-    greedy_solution(starting_point, POINTS, socketio)
+    algorithm = data['algorithm']
+    if algorithm == 'greedy':
+        greedy_solution(0, POINTS, socketio)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,7 +3,7 @@ const pointRange = document.getElementById("pointRange");
 const pointCount = document.getElementById("pointCount");
 const canvas = document.getElementById("canvas");
 const calculateBtn = document.getElementById("calculate");
-
+const algorithmSelect = document.getElementById("algorithmSelect");
 let numPoints = parseInt(pointRange.value);
 let points = [];
 
@@ -22,12 +22,11 @@ pointRange.addEventListener("input", () => {
     socket.emit('get_points', { numPoints: numPoints });
 });
 
-// Trigger the greedy algorithm on a button click or event
+// Trigger the selected algorithm on button click
 calculateBtn.addEventListener('click', () => {
-    const startingPoint = 0;
-    socket.emit('start_greedy', {startingPoint: startingPoint});
+    const selectedAlgorithm = algorithmSelect.value;
+    socket.emit('start_algorithm', { algorithm: selectedAlgorithm, numPoints: numPoints });
 });
-
 
 // Handle the points data from the backend
 socket.on('receive_points', function(data) {
