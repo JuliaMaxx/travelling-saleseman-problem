@@ -4,12 +4,19 @@ const pointCount = document.getElementById("pointCount");
 const canvas = document.getElementById("canvas");
 const calculateBtn = document.getElementById("calculate");
 
-let points = []
+let numPoints = parseInt(pointRange.value);
+let points = [];
+
+// Clear everything on page load
+window.onload = function() {
+    socket.emit('get_points', { numPoints: numPoints });
+    
+};
 
 // Update the displayed number of points based on the range slider
 pointRange.addEventListener("input", () => {
     pointCount.textContent = pointRange.value;
-    const numPoints = parseInt(pointRange.value);
+    numPoints = parseInt(pointRange.value);
 
     // Send request to backend for new points
     socket.emit('get_points', { numPoints: numPoints });
@@ -74,7 +81,7 @@ function updateLines(solution, points) {
     lineGroup.selectAll('path').remove();
     
     // No lines to draw if fewer than 2 points
-    if (solutionPoints.length < 2) {
+    if (solutionPoints.length < 2 || pointRange.value == 1) {
         return;
     }
 
