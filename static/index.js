@@ -9,7 +9,7 @@ let points = []
 // Update the displayed number of points based on the range slider
 pointRange.addEventListener("input", () => {
     pointCount.textContent = pointRange.value;
-    numPoints = parseInt(pointRange.value);
+    const numPoints = parseInt(pointRange.value);
 
     // Send request to backend for new points
     socket.emit('get_points', { numPoints: numPoints });
@@ -20,6 +20,7 @@ calculateBtn.addEventListener('click', () => {
     const startingPoint = 0;
     socket.emit('start_greedy', {startingPoint: startingPoint});
 });
+
 
 // Handle the points data from the backend
 socket.on('receive_points', function(data) {
@@ -34,6 +35,7 @@ socket.on('update_lines', function(data) {
     updateLines(solution, points);  // Update the lines progressively
 });
 
+
 // Set up the D3 canvas
 const svg = d3.select('#canvas')
 .append('svg')
@@ -43,6 +45,7 @@ const svg = d3.select('#canvas')
 // Create groups for lines and circles
 const lineGroup = svg.append('g').attr('class', 'lines');
 const circleGroup = svg.append('g').attr('class', 'circles');
+
 
 function updatePoints() {
         // Clear the circles and lines from the canvas

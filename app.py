@@ -2,10 +2,11 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import random
 from algorithms import greedy_solution
-POINTS = []
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+POINTS = []
 
 @app.route('/')
 def home():
