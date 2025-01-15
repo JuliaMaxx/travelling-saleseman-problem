@@ -2,6 +2,7 @@ const socket = io();
 const pointRange = document.getElementById("pointRange");
 const pointCount = document.getElementById("pointCount");
 const canvas = document.getElementById("canvas");
+const calculateBtn = document.getElementById("calculate");
 
 let points = []
 
@@ -14,10 +15,23 @@ pointRange.addEventListener("input", () => {
     socket.emit('get_points', { numPoints: numPoints });
 });
 
+// Trigger the greedy algorithm on a button click or event
+calculateBtn.addEventListener('click', () => {
+    const startingPoint = 0;
+    socket.emit('start_greedy', {startingPoint: startingPoint});
+});
+
 // Handle the points data from the backend
 socket.on('receive_points', function(data) {
     points = data.points;
     updatePoints();
+});
+
+// Event listener for the backend sending updates on the greedy algorithm progress
+socket.on('update_lines', function(data) {
+    const solution = data.solution;
+    const points = data.points
+    updateLines(solution, points);  // Update the lines progressively
 });
 
 // Set up the D3 canvas
@@ -35,7 +49,6 @@ function updatePoints() {
         circleGroup.selectAll('circle').remove();
         lineGroup.selectAll('path').remove();
 
-
         // Create circles for each point
         circleGroup.selectAll('circle')
         .data(points)
@@ -51,12 +64,14 @@ function updatePoints() {
 }
 
 // Update the canvas with D3.js visualization
-function updateLines() {
+function updateLines(solution, points) {
+    const solutionPoints = solution.map(index => points[index]);
+
     // Clear lines from the canvas
     lineGroup.selectAll('path').remove();
     
     // No lines to draw if fewer than 2 points
-    if (points.length < 2) {
+    if (solutionPoints.length < 2) {
         return;
     }
 
@@ -66,7 +81,7 @@ function updateLines() {
                    .y(d => d.y);
 
     lineGroup.append('path')
-       .data([points])
+       .data([solutionPoints])
        .attr('d', line)
        .attr('fill', 'none')
        .attr('stroke', 'rgb(95, 85, 205)')
