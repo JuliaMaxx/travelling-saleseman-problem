@@ -1,5 +1,6 @@
 import math
 import time
+import random
 
 # Calculate distance between two points
 def distance_between(x1, x2, y1, y2):
@@ -36,3 +37,12 @@ def greedy_solution(starting_point, POINTS, socketio):
     solution.append(solution[0])
     socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
     return solution
+
+def random_solution(POINTS, socketio):
+   solution = list(range(len(POINTS)))
+   random.shuffle(solution)
+   
+   # Ensure the solution returns to the starting city
+   solution.append(solution[0])
+   socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
+   return solution
