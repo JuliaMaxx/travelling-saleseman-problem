@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import random
-from algorithms import greedy_solution, random_solution
+from algorithms import greedy_solution, random_solution, average_of_random
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -27,7 +27,12 @@ def start_greedy_algorithm(data):
     if algorithm == 'greedy':
         greedy_solution(0, POINTS, socketio)
     elif algorithm == 'random':
-        random_solution(POINTS, socketio)
+        average_num = data['averageNum']
+        if average_num == 1:
+            random_solution(POINTS, socketio)
+        else:
+            average_of_random(average_num, POINTS, socketio)
+            
 
 if __name__ == '__main__':
     app.run(debug=True)

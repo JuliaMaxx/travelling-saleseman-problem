@@ -4,6 +4,9 @@ const pointCount = document.getElementById("pointCount");
 const canvas = document.getElementById("canvas");
 const calculateBtn = document.getElementById("calculate");
 const algorithmSelect = document.getElementById("algorithmSelect");
+const averageCheck = document.getElementById("averageCheck");
+const averageCountInput = document.getElementById("averageCountInput");
+const averageCount = document.getElementById("averageCount");
 let numPoints = parseInt(pointRange.value);
 let points = [];
 
@@ -22,11 +25,44 @@ pointRange.addEventListener("input", () => {
     socket.emit('get_points', { numPoints: numPoints });
 });
 
+
+// Show or hide options based on the selected algorithm
+algorithmSelect.addEventListener("change", () => {
+    if (algorithmSelect.value === "random") {
+        randomOptions.style.display = "block";
+    } else {
+        randomOptions.style.display = "none";
+        averageCheck.checked = false; 
+        averageCountInput.style.display = "none"; 
+    }
+});
+
 // Trigger the selected algorithm on button click
 calculateBtn.addEventListener('click', () => {
     const selectedAlgorithm = algorithmSelect.value;
-    socket.emit('start_algorithm', { algorithm: selectedAlgorithm, numPoints: numPoints });
+    let averageNum = 1
+    if (selectedAlgorithm === "random" && averageCheck.checked){
+        averageNum = parseInt(averageCount.value);
+        if (averageNum < 1) {
+            averageNum = 1;
+            averageCount.value = 1; // Reset the input field to the minimum value
+        } else if (averageNum > 100) {
+            averageNum = 100;
+            averageCount.value = 100; // Reset the input field to the maximum value
+        }
+    }
+
+    socket.emit('start_algorithm', { algorithm: selectedAlgorithm, numPoints: numPoints, averageNum: averageNum });
 });
+// Show or hide the number input based on the checkbox
+averageCheck.addEventListener("change", () => {
+    if (averageCheck.checked) {
+        averageCountInput.style.display = "block";
+    } else {
+        averageCountInput.style.display = "none";
+    }
+});
+
 
 // Handle the points data from the backend
 socket.on('receive_points', function(data) {

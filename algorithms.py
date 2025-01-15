@@ -46,3 +46,9 @@ def random_solution(POINTS, socketio):
    solution.append(solution[0])
    socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
    return solution
+
+def average_of_random(amount, POINTS, socketio):
+    for _ in range(amount):
+        time.sleep(0.1)
+        solution = random_solution(POINTS, socketio)      
+    return solution 

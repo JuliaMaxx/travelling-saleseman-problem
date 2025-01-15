@@ -22,6 +22,15 @@
                     <option value="random">Random</option>
                     <option value="genetic">Genetic</option>
                 </select>
+                <div id="randomOptions" style="display: none;">
+                    <input type="checkbox" id="averageCheck" />
+                    <label for="averageCheck">Calculate average of random solutions</label>
+                
+                    <div id="averageCountInput" style="display: none;">
+                        <label for="averageCount">Number of random solutions:</label>
+                        <input type="number" id="averageCount" value="10" min="1" max="100" placeholder="Enter a number" />
+                    </div>
+                </div>
             </form>
             <button id="calculate">Calculate</button>
         </nav>
