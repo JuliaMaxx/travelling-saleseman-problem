@@ -18,6 +18,8 @@ const averageCount = document.getElementById("averageCount");
 // Genetic algorithm
 const geneticOptions = document.getElementById("geneticOptions");
 const selectionSelect = document.getElementById("selectionSelect");
+const crossoverSelect = document.getElementById("crossoverSelect");
+const mutationSelect = document.getElementById("mutationSelect");
 const tournamentSizeInput = document.getElementById("tournamentSizeInput");
 const tournamentSizeRange = document.getElementById("tournamentSizeRange");
 const tournamentSizeCount = document.getElementById("tournamentSizeCount");
@@ -103,12 +105,49 @@ eliteCheck.addEventListener("change", () => {
 // Trigger the selected algorithm on button click
 calculateBtn.addEventListener('click', () => {
     const selectedAlgorithm = algorithmSelect.value;
-    let averageNum = 1
+    let averageNum = 1;
+    let populationSize = 50;
+    let greedyRatio = 0.2;
+    let selection = 1;
+    let tournamentSize = 5;
+    let elite = true;
+    let eliteSize = 5;
+    let crossover = 1;
+    let mutation = 2;
+    let mutationProbability = 0.1;
+    let epochNum = 10;
     if (selectedAlgorithm === "random" && averageCheck.checked){
         averageNum = parseInt(averageRange.value);
     }
+    else if (selectedAlgorithm === "genetic"){
+        populationSize = parseInt(populationRange.value);
+        greedyRatio = parseInt(greedyRange.value)/100;
+        selection = selectionSelect.value == "tournament"? 1 : 2;
+        tournamentSize = parseInt(tournamentSizeRange.value);
+        elite = eliteCheck.value.checked? true: false;
+        eliteSize = parseInt(eliteSizeRange.value);
+        crossover = crossoverSelect.value == "ordered"? 1:
+                    crossoverSelect.value == "partially matched"? 2: 3;
+        mutation = mutationSelect.value == "swap"? 1: 2;
+        mutationProbability = parseInt(mutationRange.value)/100;
+        epochNum = parseInt(epochRange.value);
+    }
 
-    socket.emit('start_algorithm', { algorithm: selectedAlgorithm, numPoints: numPoints, averageNum: averageNum });
+    socket.emit('start_algorithm', { 
+        algorithm: selectedAlgorithm,
+        numPoints: numPoints,
+        averageNum: averageNum,
+        populationSize: populationSize,
+        greedyRatio: greedyRatio,
+        selection: selection,
+        tournamentSize: tournamentSize,
+        elite: elite,
+        eliteSize: eliteSize,
+        crossover: crossover,
+        mutation: mutation,
+        mutationProbability: mutationProbability,
+        epochNum: epochNum
+      });
 });
 
 
