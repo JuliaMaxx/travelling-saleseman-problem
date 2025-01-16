@@ -6,6 +6,7 @@ const calculateBtn = document.getElementById("calculate");
 const algorithmSelect = document.getElementById("algorithmSelect");
 const averageCheck = document.getElementById("averageCheck");
 const averageCountInput = document.getElementById("averageCountInput");
+const averageRange = document.getElementById("averageRange");
 const averageCount = document.getElementById("averageCount");
 let numPoints = parseInt(pointRange.value);
 let points = [];
@@ -25,7 +26,6 @@ pointRange.addEventListener("input", () => {
     socket.emit('get_points', { numPoints: numPoints });
 });
 
-
 // Show or hide options based on the selected algorithm
 algorithmSelect.addEventListener("change", () => {
     if (algorithmSelect.value === "random") {
@@ -42,18 +42,12 @@ calculateBtn.addEventListener('click', () => {
     const selectedAlgorithm = algorithmSelect.value;
     let averageNum = 1
     if (selectedAlgorithm === "random" && averageCheck.checked){
-        averageNum = parseInt(averageCount.value);
-        if (averageNum < 1) {
-            averageNum = 1;
-            averageCount.value = 1; // Reset the input field to the minimum value
-        } else if (averageNum > 100) {
-            averageNum = 100;
-            averageCount.value = 100; // Reset the input field to the maximum value
-        }
+        averageNum = parseInt(averageRange.value);
     }
 
     socket.emit('start_algorithm', { algorithm: selectedAlgorithm, numPoints: numPoints, averageNum: averageNum });
 });
+
 // Show or hide the number input based on the checkbox
 averageCheck.addEventListener("change", () => {
     if (averageCheck.checked) {
@@ -62,6 +56,10 @@ averageCheck.addEventListener("change", () => {
         averageCountInput.style.display = "none";
     }
 });
+
+averageRange.addEventListener("input", () => {
+    averageCount.textContent = averageRange.value;
+})
 
 
 // Handle the points data from the backend
