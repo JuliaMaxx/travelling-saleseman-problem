@@ -1,23 +1,30 @@
+// General
 const socket = io();
-const pointRange = document.getElementById("pointRange");
-const pointCount = document.getElementById("pointCount");
 const canvas = document.getElementById("canvas");
 const calculateBtn = document.getElementById("calculate");
 const algorithmSelect = document.getElementById("algorithmSelect");
+
+// Drawing points
+const pointRange = document.getElementById("pointRange");
+const pointCount = document.getElementById("pointCount");
+
+// Random algorithm
 const randomOptions = document.getElementById("randomOptions");
 const averageCheck = document.getElementById("averageCheck");
 const averageCountInput = document.getElementById("averageCountInput");
 const averageRange = document.getElementById("averageRange");
 const averageCount = document.getElementById("averageCount");
+
+// Genetic algorithm
 const geneticOptions = document.getElementById("geneticOptions");
 const selectionSelect = document.getElementById("selectionSelect");
 const tournamentSizeInput = document.getElementById("tournamentSizeInput");
 const tournamentSizeRange = document.getElementById("tournamentSizeRange");
+const tournamentSizeCount = document.getElementById("tournamentSizeCount");
 const eliteSizeRange = document.getElementById("eliteSizeRange");
 const eliteCheck = document.getElementById("eliteCheck");
 const eliteSizeInput = document.getElementById("eliteSizeInput");
 const eliteCount = document.getElementById("eliteCount");
-const tournamentSizeCount = document.getElementById("tournamentSizeCount");
 const populationRange = document.getElementById("populationRange");
 const populationCount = document.getElementById("populationCount");
 const greedyRange = document.getElementById("greedyRange");
@@ -36,6 +43,7 @@ window.onload = function() {
     
 };
 
+
 // Update the displayed number of points based on the range slider
 pointRange.addEventListener("input", () => {
     pointCount.textContent = pointRange.value;
@@ -45,7 +53,8 @@ pointRange.addEventListener("input", () => {
     socket.emit('get_points', { numPoints: numPoints });
 });
 
-// Show or hide options based on the selected algorithm
+
+// Show or hide options based on the selected options
 algorithmSelect.addEventListener("change", () => {
     if (algorithmSelect.value === "random") {
         randomOptions.style.display = "block";
@@ -65,6 +74,32 @@ algorithmSelect.addEventListener("change", () => {
     }
 });
 
+averageCheck.addEventListener("change", () => {
+    if (averageCheck.checked) {
+        averageCountInput.style.display = "block";
+    } else {
+        averageCountInput.style.display = "none";
+    }
+});
+
+selectionSelect.addEventListener("change", () => {
+    if (selectionSelect.value === "tournament"){
+        tournamentSizeInput.style.display = "block";
+    }
+    else{
+        tournamentSizeInput.style.display = "none";
+    }
+});
+
+eliteCheck.addEventListener("change", () => {
+    if (eliteCheck.checked) {
+        eliteSizeInput.style.display = "block";
+    } else {
+        eliteSizeInput.style.display = "none";
+    }
+});
+
+
 // Trigger the selected algorithm on button click
 calculateBtn.addEventListener('click', () => {
     const selectedAlgorithm = algorithmSelect.value;
@@ -76,15 +111,8 @@ calculateBtn.addEventListener('click', () => {
     socket.emit('start_algorithm', { algorithm: selectedAlgorithm, numPoints: numPoints, averageNum: averageNum });
 });
 
-// Show or hide the number input based on the checkbox
-averageCheck.addEventListener("change", () => {
-    if (averageCheck.checked) {
-        averageCountInput.style.display = "block";
-    } else {
-        averageCountInput.style.display = "none";
-    }
-});
 
+// Update range span values
 averageRange.addEventListener("input", () => {
     averageCount.textContent = averageRange.value;
 });
@@ -113,22 +141,6 @@ epochRange.addEventListener("input", () => {
     epochCount.textContent = epochRange.value;
 });
 
-selectionSelect.addEventListener("change", () => {
-    if (selectionSelect.value === "tournament"){
-        tournamentSizeInput.style.display = "block";
-    }
-    else{
-        tournamentSizeInput.style.display = "none";
-    }
-});
-
-eliteCheck.addEventListener("change", () => {
-    if (eliteCheck.checked) {
-        eliteSizeInput.style.display = "block";
-    } else {
-        eliteSizeInput.style.display = "none";
-    }
-});
 
 // Handle the points data from the backend
 socket.on('receive_points', function(data) {
@@ -136,11 +148,11 @@ socket.on('receive_points', function(data) {
     updatePoints();
 });
 
-// Event listener for the backend sending updates on the greedy algorithm progress
+// Handle backend sending updates on algorithm progress
 socket.on('update_lines', function(data) {
     const solution = data.solution;
     const points = data.points
-    updateLines(solution, points);  // Update the lines progressively
+    updateLines(solution, points);
 });
 
 
@@ -174,7 +186,7 @@ function updatePoints() {
         svg.node().appendChild(circleGroup.node());
 }
 
-// Update the canvas with D3.js visualization
+
 function updateLines(solution, points) {
     const solutionPoints = solution.map(index => points[index]);
 
