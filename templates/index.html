@@ -18,6 +18,7 @@
             <form id="algorithmForm">
                 <label for="algorithmSelect">Choose Algorithm:</label>
                 <select id="algorithmSelect" name="algorithm">
+                    <option value="" disabled selected>Choose algorithm</option>
                     <option value="greedy">Greedy</option>
                     <option value="random">Random</option>
                     <option value="genetic">Genetic</option>
@@ -27,11 +28,65 @@
                     <label for="averageCheck">Calculate average of random solutions</label>
                 
                     <div id="averageCountInput" style="display: none;">
-                        <label for="averageCount">Number of random solutions:</label>
+                        <label for="averageRange">Number of random solutions:</label>
                         <input type="range" id="averageRange" value="10" min="1" max="100" step="1">
                         <span id="averageCount">10</span>
                     </div>
                 </div>
+                <div id="geneticOptions" style="display: none;">
+                        <label for="populationSize">Population size:</label>
+                        <input type="range" id="populationRange" value="50" min="1" max="200" step="1">
+                        <span id="populationCount">50</span>
+                        
+                        <label for="greedyRatio">Greedy ratio:</label>
+                        <input type="range" id="greedyRange" value="20" min="1" max="100" step="1">
+                        <span id="greedyCount">20</span>
+
+                        <label for="selectionSelect">Choose Selection:</label>
+                        <select id="selectionSelect" name="selection">
+                            <option value="" disabled selected>Choose selection</option>
+                            <option value="tournament">Tournament</option>
+                            <option value="roulette">Roulette</option>
+                        </select>
+                        
+                        <div id="tournamentSizeInput" style="display: none;">
+                            <label for="tournamentSizeRange">Tournament batch:</label>
+                            <input type="range" id="tournamentSizeRange" value="5" min="3" max="50" step="1">
+                            <span id="tournamentSizeCount">5</span>
+                        </div>
+                        
+                        <input type="checkbox" id="eliteCheck" />
+                        <label for="eliteCheck">Elite:</label>
+
+                        <div id="eliteSizeInput" style="display: none;">
+                            <label for="eliteSizeRange">Number of elites:</label>
+                            <input type="range" id="eliteSizeRange" value="5" min="3" max="50" step="1">
+                            <span id="eliteCount">5</span>
+                        </div>
+
+                        <label for="crossoverSelect">Choose crossover:</label>
+                        <select id="crossoverSelect" name="crossover">
+                            <option value="" disabled selected>Choose crossover</option>
+                            <option value="ordered">Ordered</option>
+                            <option value="partially matched">Partially matched</option>
+                            <option value="cycle">Cycle</option>
+                        </select>
+
+                        <label for="mutationSelect">Choose mutation:</label>
+                        <select id="mutationSelect" name="mutation">
+                            <option value="" disabled selected>Choose mutation</option>
+                            <option value="swap">Swap</option>
+                            <option value="inversion">Inversion</option>
+                        </select>
+
+                        <label for="mutationRange">Mutation probability:</label>
+                        <input type="range" id="mutationRange" value="1" min="1" max="100" step="1">
+                        <span id="mutationCount">1</span>
+
+                        <label for="epochRange">Number of epochs:</label>
+                        <input type="range" id="epochRange" value="1" min="1" max="100" step="1">
+                        <span id="epochCount">1</span>
+                    </div>
             </form>
             <button id="calculate">Calculate</button>
         </nav>
