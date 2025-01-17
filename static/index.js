@@ -202,7 +202,8 @@ socket.on('receive_points', function(data) {
 socket.on('update_lines', function(data) {
     const solution = data.solution;
     const points = data.points
-    updateLines(solution, points);
+    const type = data.type
+    updateLines(solution, points, type);
 });
 
 
@@ -237,7 +238,7 @@ function updatePoints() {
 }
 
 
-function updateLines(solution, points) {
+function updateLines(solution, points, type) {
     const solutionPoints = solution.map(index => points[index]);
 
     // Clear lines from the canvas
@@ -246,6 +247,25 @@ function updateLines(solution, points) {
     // No lines to draw if fewer than 2 points
     if (solutionPoints.length < 2 || pointRange.value == 1) {
         return;
+    }
+
+    // Determine line color based on type
+    let lineColor;
+    switch (type) {
+        case 'parent':
+            lineColor = 'rgb(150, 150, 150)'; // Gray for parents
+            break;
+        case 'crossover':
+            lineColor = 'rgb(255, 85, 205)'; // Purple for crossover
+            break;
+        case 'mutation':
+            lineColor = 'rgb(255, 69, 0)'; // Red for mutation
+            break;
+        case 'best':
+            lineColor = 'rgb(0, 255, 0)'; // Green for best
+            break;
+        default:
+            lineColor = 'rgb(95, 85, 205)'; // Blue for unknown
     }
 
     // Draw a path connecting the points
@@ -257,6 +277,6 @@ function updateLines(solution, points) {
        .data([solutionPoints])
        .attr('d', line)
        .attr('fill', 'none')
-       .attr('stroke', 'rgb(95, 85, 205)')
+       .attr('stroke', lineColor)
        .attr('stroke-width', 2.5);
 }

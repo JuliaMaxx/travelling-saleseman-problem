@@ -47,13 +47,14 @@ def greedy_solution(starting_point, socketio):
         solution.append(next_city)
         starting_point = next_city
         
+        time.sleep(config.VISUALIZATION_DELAY)
         # Emit the current state of the solution to the frontend
         socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
         # Sleep for a short amount of time to visualize the progress
         time.sleep(config.VISUALIZATION_DELAY)
         
     solution.append(solution[0])
-    socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
+    socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
     print(fitness(solution))
     return solution
 
@@ -94,7 +95,10 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
         while len(new_population) < len(population):
             # Select parents
             parent1, parent2 = select_parents(population, selection, tournament_size)
-            
+            time.sleep(config.VISUALIZATION_DELAY)
+            socketio.emit('update_lines', {'solution': parent1, 'points': config.POINTS, 'type':'parent'})
+            time.sleep(config.VISUALIZATION_DELAY)
+            socketio.emit('update_lines', {'solution': parent2, 'points': config.POINTS, 'type':'parent'})
             # Perform chosen crossover
             match crossover:
                 case 1:  
@@ -103,7 +107,8 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                     child = partially_matched_crossover(parent1, parent2)
                 case 3:  
                     child = cycle_crossover(parent1, parent2)
-            
+            time.sleep(config.VISUALIZATION_DELAY)
+            socketio.emit('update_lines', {'solution': child, 'points': config.POINTS, 'type':'crossover'})
             # Apply chosen mutation
             match mutation:
                 case 1:
@@ -111,13 +116,12 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                 case 2:
                     mutated_child = mutation_swap(mutation_probability, child)
         
+            time.sleep(config.VISUALIZATION_DELAY)
+            socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS, 'type':'mutation'})
             # Add to the new population
             if tuple(mutated_child) not in existing_individuals:
                 new_population.append(mutated_child)
                 existing_individuals.add(tuple(mutated_child))
-        time.sleep(config.VISUALIZATION_DELAY)
-        socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS})
-        
         # Update for the next epoch
         population = new_population
         n += 1
@@ -125,7 +129,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
         print(f"\nEpoch {n}")
         best = population_info(population)
         time.sleep(config.VISUALIZATION_DELAY)
-        socketio.emit('update_lines', {'solution': best, 'points': config.POINTS})
+        socketio.emit('update_lines', {'solution': best, 'points': config.POINTS, 'type':'best'})
         
     return population
 
