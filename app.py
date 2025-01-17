@@ -7,8 +7,6 @@ import config
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-POINTS = []
-
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -17,34 +15,36 @@ def home():
 @socketio.on('get_points')
 def handle_points(data):
     num_points = data['numPoints']
-    global POINTS
-    POINTS = [{'x': random.randint(50, 1150), 'y': random.randint(50, 650)} for _ in range(num_points)]
-    emit('receive_points', {'points': POINTS})
+    config.POINTS = [{'x': random.randint(50, 1150), 'y': random.randint(50, 650)} for _ in range(num_points)]
+    emit('receive_points', {'points': config.POINTS})
     
 # Event to start the selected algorithm
 @socketio.on('start_algorithm')
 def start_greedy_algorithm(data):
     algorithm = data['algorithm']
+    # Greedy
     if algorithm == 'greedy':
-        greedy_solution(0, POINTS, socketio)
+        greedy_solution(0, socketio)
+    # Random
     elif algorithm == 'random':
         average_num = data['averageNum']
         if average_num == 1:
-            random_solution(POINTS, socketio)
+            random_solution(socketio)
         else:
-            average_of_random(average_num, POINTS, socketio)
+            average_of_random(average_num, socketio)
+    # Genetic        
     elif algorithm == "genetic":
-        population_size = data['populationSize']
-        greedy_ratio = data['greedyRatio']
-        selection = data['selection']
-        tournament_size = data['tournamentSize']
-        elitism = data['elite']
-        elite_size = data['eliteSize']
-        crossover = data['crossover']
-        mutation = data['mutation']
-        mutation_probability = data['mutationProbability']
-        number_of_epochs = data['epochNum']
-        genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, POINTS, socketio)         
+        genetic(
+            data['populationSize'],
+            data['greedyRatio'],
+            data['crossover'],
+            data['epochNum'],
+            data['mutation'],
+            data['mutationProbability'],
+            data['selection'],
+            data['tournamentSize'],
+            data['elite'],
+            data['eliteSize'], socketio)         
         
 @socketio.on('update_delay')
 def update_delay(data):

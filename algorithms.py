@@ -9,7 +9,7 @@ def distance_between(x1, x2, y1, y2):
     return round(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2), 3)
 
 # Calculate fitness of a given solution
-def fitness(solution, POINTS, socketio):
+def fitness(solution):
     total_distance = 0
     if len(solution) > 1:
         for i in range(len(solution) - 1):
@@ -19,15 +19,15 @@ def fitness(solution, POINTS, socketio):
             
             # Calculate Distance
             distance = distance_between(
-                POINTS[current_index]['x'], POINTS[next_index]['x'],
-                POINTS[current_index]['y'], POINTS[next_index]['y']
+                config.POINTS[current_index]['x'], config.POINTS[next_index]['x'],
+                config.POINTS[current_index]['y'], config.POINTS[next_index]['y']
             )
             total_distance += distance
     return round(total_distance, 3)
 
 # Greedy algorithm to find a solution starting from a specific point
-def greedy_solution(starting_point, POINTS, socketio):
-    remaining_indexes = list(range(len(POINTS)))
+def greedy_solution(starting_point, socketio):
+    remaining_indexes = list(range(len(config.POINTS)))
     solution = [starting_point]
     
     while len(remaining_indexes) > 1:
@@ -37,8 +37,8 @@ def greedy_solution(starting_point, POINTS, socketio):
         
         for i in remaining_indexes:
             distance = distance_between(
-                POINTS[i]['x'], POINTS[starting_point]['x'],
-                POINTS[i]['y'], POINTS[starting_point]['y']
+                config.POINTS[i]['x'], config.POINTS[starting_point]['x'],
+                config.POINTS[i]['y'], config.POINTS[starting_point]['y']
             )
             if distance < shortest_distance:
                 shortest_distance = distance
@@ -48,52 +48,52 @@ def greedy_solution(starting_point, POINTS, socketio):
         starting_point = next_city
         
         # Emit the current state of the solution to the frontend
-        socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
+        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
         # Sleep for a short amount of time to visualize the progress
         time.sleep(config.VISUALIZATION_DELAY)
         
     solution.append(solution[0])
-    socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
-    print(fitness(solution, POINTS, socketio))
+    socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
+    print(fitness(solution))
     return solution
 
 # Random solution
-def random_solution(POINTS, socketio):
-   solution = list(range(len(POINTS)))
+def random_solution(socketio):
+   solution = list(range(len(config.POINTS)))
    random.shuffle(solution)
    
    # Ensure the solution returns to the starting city
    solution.append(solution[0])
-   socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
+   socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
    return solution
 
 # Average of random solutions
-def average_of_random(amount, POINTS, socketio):
+def average_of_random(amount, socketio):
     for _ in range(amount):
         time.sleep(config.VISUALIZATION_DELAY)
-        solution = random_solution(POINTS, socketio)      
+        solution = random_solution(socketio)      
     return solution 
 
 # Genetic algorithm
-def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, POINTS, socketio):
+def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, socketio):
     n = 1
-    population = initial_population(population_size, greedy_ratio, POINTS, socketio)
+    population = initial_population(population_size, greedy_ratio, socketio)
     
     print(f"Epoch {n}")
-    population_info(population, POINTS, socketio)
+    population_info(population)
     
     while n < number_of_epochs:
         new_population = []
         existing_individuals = set(new_population)
         
         if elitism:
-            elite = elite_selection(population, elite_size, POINTS, socketio)
+            elite = elite_selection(population, elite_size)
             new_population.extend(elite)
             existing_individuals.update(tuple(ind) for ind in elite)
             
         while len(new_population) < len(population):
             # Select parents
-            parent1, parent2 = select_parents(population, selection, tournament_size, POINTS, socketio)
+            parent1, parent2 = select_parents(population, selection, tournament_size)
             
             # Perform chosen crossover
             match crossover:
@@ -116,22 +116,22 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                 new_population.append(mutated_child)
                 existing_individuals.add(tuple(mutated_child))
         time.sleep(config.VISUALIZATION_DELAY)
-        socketio.emit('update_lines', {'solution': mutated_child, 'points': POINTS})
+        socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS})
         
         # Update for the next epoch
         population = new_population
         n += 1
         
         print(f"\nEpoch {n}")
-        best = population_info(population, POINTS, socketio)
+        best = population_info(population)
         time.sleep(config.VISUALIZATION_DELAY)
-        socketio.emit('update_lines', {'solution': best, 'points': POINTS})
+        socketio.emit('update_lines', {'solution': best, 'points': config.POINTS})
         
     return population
 
 
 # Genetic algorithm functions
-def initial_population(size, greedy_ratio, POINTS, socketio):
+def initial_population(size, greedy_ratio, socketio):
     print(size)
     print(greedy_ratio)
     population = []
@@ -141,16 +141,16 @@ def initial_population(size, greedy_ratio, POINTS, socketio):
     size_random = size - size_greedy
     
     for _ in range(size_greedy):
-        starting_point = random.choice(list(range(len(POINTS))))
-        population.append(greedy_solution(starting_point, POINTS, socketio))
+        starting_point = random.choice(list(range(len(config.POINTS))))
+        population.append(greedy_solution(starting_point, socketio))
         
     for _ in range(size_random):
-        population.append(random_solution(POINTS, socketio))
+        population.append(random_solution(socketio))
         
     random.shuffle(population)
     return population
 
-def population_info(population, POINTS, socketio):
+def population_info(population):
     size = len(population)
     # Find the best, worst and average distance
     best_distance =  float('inf')
@@ -158,7 +158,7 @@ def population_info(population, POINTS, socketio):
     total_distance = 0
     best_solution = []
     for solution in population:
-        distance = fitness(solution, POINTS, socketio)
+        distance = fitness(solution)
         total_distance += distance
         if distance < best_distance:
             best_distance = distance
@@ -172,7 +172,7 @@ def population_info(population, POINTS, socketio):
     print(f"Average distance: {average_distance}")
     return best_solution
     
-def tournament(population, tournament_size, POINTS, socketio):
+def tournament(population, tournament_size):
     # Take a random sample out of population 
     contestants = random.sample(population, tournament_size)
     
@@ -181,16 +181,16 @@ def tournament(population, tournament_size, POINTS, socketio):
     
     # Determine the best one out of the sample
     for contestant in contestants:
-       distance = fitness(contestant, POINTS, socketio)
+       distance = fitness(contestant)
        if  distance < best_distance:
            best_distance = distance
            winner = contestant
     return winner 
 
-def elite_selection(population, elite_size, POINTS, socketio):
+def elite_selection(population, elite_size):
     elite = []
     for solution in population:
-        solution_fitness = fitness(solution, POINTS, socketio)
+        solution_fitness = fitness(solution)
         
         # If there is no initial elite
         if len(elite) < elite_size:
@@ -207,9 +207,9 @@ def elite_selection(population, elite_size, POINTS, socketio):
     # return only solutions with no distances
     return [x[0] for x in elite]
 
-def roulette_selection(population, POINTS, socketio):
+def roulette_selection(population):
     # Calculate fitness for each solution
-    distances = [fitness(solution, POINTS, socketio) for solution in population]
+    distances = [fitness(solution) for solution in population]
     distance_of_all = sum(distances)
     
     # Calculate cumulative probabilities in one step
@@ -352,9 +352,9 @@ def mutation_inversion(mutation_probability, child):
         solution[first_index:last_index] = solution[first_index:last_index][::-1]
     return solution
 
-def select_parents(population, selection, tournament_size, POINTS, socketio):
+def select_parents(population, selection, tournament_size):
     match selection:
         case 1:
-            return random.sample([roulette_selection(population, POINTS, socketio) for _ in range(2)], 2)
+            return random.sample([roulette_selection(population) for _ in range(2)], 2)
         case 2:
-            return random.sample([tournament(population, tournament_size, POINTS, socketio) for _ in range(2)], 2)
+            return random.sample([tournament(population, tournament_size) for _ in range(2)], 2)
