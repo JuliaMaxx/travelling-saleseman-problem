@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import random
 from algorithms import greedy_solution, random_solution, average_of_random, genetic
+import config
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -43,7 +44,11 @@ def start_greedy_algorithm(data):
         mutation = data['mutation']
         mutation_probability = data['mutationProbability']
         number_of_epochs = data['epochNum']
-        genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, POINTS, socketio)            
+        genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, POINTS, socketio)         
+        
+@socketio.on('update_delay')
+def update_delay(data):
+        config.VISUALIZATION_DELAY = data['delay'] 
 
 if __name__ == '__main__':
     app.run(debug=True)

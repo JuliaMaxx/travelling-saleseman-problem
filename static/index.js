@@ -3,6 +3,8 @@ const socket = io();
 const canvas = document.getElementById("canvas");
 const calculateBtn = document.getElementById("calculate");
 const algorithmSelect = document.getElementById("algorithmSelect");
+const speedRange = document.getElementById("speed");
+const speedCount = document.getElementById("speedCount");
 
 // Drawing points
 const pointRange = document.getElementById("pointRange");
@@ -55,6 +57,11 @@ pointRange.addEventListener("input", () => {
     socket.emit('get_points', { numPoints: numPoints });
 });
 
+// Update the speed of the algorithm
+speedRange.addEventListener("input", () => {
+    const delay = parseInt(speedRange.value)/100;
+    socket.emit('update_delay', {delay: delay});
+});
 
 // Show or hide options based on the selected options
 algorithmSelect.addEventListener("change", () => {
@@ -178,6 +185,10 @@ mutationRange.addEventListener("input", () => {
 
 epochRange.addEventListener("input", () => {
     epochCount.textContent = epochRange.value;
+});
+
+speedRange.addEventListener("input", () => {
+    speedCount.textContent = speedRange.value;
 });
 
 

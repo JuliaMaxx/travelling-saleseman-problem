@@ -2,6 +2,7 @@ import math
 import time
 import random
 import bisect
+import config
 
 # Calculate distance between two points
 def distance_between(x1, x2, y1, y2):
@@ -48,9 +49,8 @@ def greedy_solution(starting_point, POINTS, socketio):
         
         # Emit the current state of the solution to the frontend
         socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
-        
         # Sleep for a short amount of time to visualize the progress
-        time.sleep(0.01)
+        time.sleep(config.VISUALIZATION_DELAY)
         
     solution.append(solution[0])
     socketio.emit('update_lines', {'solution': solution, 'points': POINTS})
@@ -70,7 +70,7 @@ def random_solution(POINTS, socketio):
 # Average of random solutions
 def average_of_random(amount, POINTS, socketio):
     for _ in range(amount):
-        time.sleep(0.1)
+        time.sleep(config.VISUALIZATION_DELAY)
         solution = random_solution(POINTS, socketio)      
     return solution 
 
@@ -115,7 +115,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
             if tuple(mutated_child) not in existing_individuals:
                 new_population.append(mutated_child)
                 existing_individuals.add(tuple(mutated_child))
-        time.sleep(0.05)
+        time.sleep(config.VISUALIZATION_DELAY)
         socketio.emit('update_lines', {'solution': mutated_child, 'points': POINTS})
         
         # Update for the next epoch
@@ -124,7 +124,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
         
         print(f"\nEpoch {n}")
         best = population_info(population, POINTS, socketio)
-        time.sleep(0.05)
+        time.sleep(config.VISUALIZATION_DELAY)
         socketio.emit('update_lines', {'solution': best, 'points': POINTS})
         
     return population
