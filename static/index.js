@@ -1,7 +1,9 @@
 // General
 const socket = io();
 const canvas = document.getElementById("canvas");
-const calculateBtn = document.getElementById("calculate");
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const stopBtn = document.getElementById("stopBtn");
 const algorithmSelect = document.getElementById("algorithmSelect");
 const speedRange = document.getElementById("speed");
 const speedCount = document.getElementById("speedCount");
@@ -40,6 +42,7 @@ const epochCount = document.getElementById("epochCount");
 
 let numPoints = parseInt(pointRange.value);
 let points = [];
+let isPaused = false;
 
 // Clear everything on page load
 window.onload = function() {
@@ -110,53 +113,88 @@ eliteCheck.addEventListener("change", () => {
 
 
 // Trigger the selected algorithm on button click
-calculateBtn.addEventListener('click', () => {
-    const selectedAlgorithm = algorithmSelect.value;
-    let averageNum = 1;
-    let populationSize = 50;
-    let greedyRatio = 0.2;
-    let selection = 1;
-    let tournamentSize = 5;
-    let elite = true;
-    let eliteSize = 5;
-    let crossover = 1;
-    let mutation = 2;
-    let mutationProbability = 0.1;
-    let epochNum = 10;
-    if (selectedAlgorithm === "random" && averageCheck.checked){
-        averageNum = parseInt(averageRange.value);
-    }
-    else if (selectedAlgorithm === "genetic"){
-        populationSize = parseInt(populationRange.value);
-        greedyRatio = parseInt(greedyRange.value)/100;
-        selection = selectionSelect.value == "tournament"? 1 : 2;
-        tournamentSize = parseInt(tournamentSizeRange.value);
-        elite = eliteCheck.value.checked? true: false;
-        eliteSize = parseInt(eliteSizeRange.value);
-        crossover = crossoverSelect.value == "ordered"? 1:
-                    crossoverSelect.value == "partially matched"? 2: 3;
-        mutation = mutationSelect.value == "swap"? 1: 2;
-        mutationProbability = parseInt(mutationRange.value)/100;
-        epochNum = parseInt(epochRange.value);
-    }
+playBtn.addEventListener('click', () => {
+    if (!isPaused) {
+        const selectedAlgorithm = algorithmSelect.value;
+        let averageNum = 1;
+        let populationSize = 50;
+        let greedyRatio = 0.2;
+        let selection = 1;
+        let tournamentSize = 5;
+        let elite = true;
+        let eliteSize = 5;
+        let crossover = 1;
+        let mutation = 2;
+        let mutationProbability = 0.1;
+        let epochNum = 10;
+        if (selectedAlgorithm === "random" && averageCheck.checked){
+            averageNum = parseInt(averageRange.value);
+        }
+        else if (selectedAlgorithm === "genetic"){
+            populationSize = parseInt(populationRange.value);
+            greedyRatio = parseInt(greedyRange.value)/100;
+            selection = selectionSelect.value == "tournament"? 1 : 2;
+            tournamentSize = parseInt(tournamentSizeRange.value);
+            elite = eliteCheck.value.checked? true: false;
+            eliteSize = parseInt(eliteSizeRange.value);
+            crossover = crossoverSelect.value == "ordered"? 1:
+                        crossoverSelect.value == "partially matched"? 2: 3;
+            mutation = mutationSelect.value == "swap"? 1: 2;
+            mutationProbability = parseInt(mutationRange.value)/100;
+            epochNum = parseInt(epochRange.value);
+        }
 
-    socket.emit('start_algorithm', { 
-        algorithm: selectedAlgorithm,
-        numPoints: numPoints,
-        averageNum: averageNum,
-        populationSize: populationSize,
-        greedyRatio: greedyRatio,
-        selection: selection,
-        tournamentSize: tournamentSize,
-        elite: elite,
-        eliteSize: eliteSize,
-        crossover: crossover,
-        mutation: mutation,
-        mutationProbability: mutationProbability,
-        epochNum: epochNum
-      });
+        socket.emit('start_algorithm', { 
+            algorithm: selectedAlgorithm,
+            numPoints: numPoints,
+            averageNum: averageNum,
+            populationSize: populationSize,
+            greedyRatio: greedyRatio,
+            selection: selection,
+            tournamentSize: tournamentSize,
+            elite: elite,
+            eliteSize: eliteSize,
+            crossover: crossover,
+            mutation: mutation,
+            mutationProbability: mutationProbability,
+            epochNum: epochNum
+        });
+        // Start the algorithm
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+        stopBtn.disabled = false;
+        isPaused = false;
+    } else {
+        // Resume the algorithm when paused
+        socket.emit('resume_algorithm');
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+        stopBtn.disabled = false;
+        isPaused = false;
+    }
 });
 
+pauseBtn.addEventListener("click", () => {
+    // Pause the algorithm
+    socket.emit('pause_algorithm');
+    pauseBtn.disabled = true;
+    // Change to Resume
+    playBtn.textContent = 'Resume';
+    playBtn.disabled = false;  
+    stopBtn.disabled = false;
+    isPaused = true;
+});
+
+stopBtn.addEventListener("click", () => {
+    // Stop the algorithm
+    socket.emit('stop_algorithm');
+    playBtn.disabled = false;
+    // Reset the button text to "Play"
+    playBtn.textContent = 'Play';
+    pauseBtn.disabled = true;
+    stopBtn.disabled = true;
+    isPaused = false;
+});
 
 // Update range span values
 averageRange.addEventListener("input", () => {
