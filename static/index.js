@@ -233,8 +233,30 @@ eliteSizeRange.addEventListener("input", () => {
     eliteCount.textContent = eliteSizeRange.value;
 });
 
-populationRange.addEventListener("input", () => {
-    populationCount.textContent = populationRange.value;
+
+populationRange.addEventListener('input', () => {
+    const populationValue = parseInt(populationRange.value);
+    populationCount.textContent = populationValue;
+
+    // Update the max value of the tournament and elite size range
+    tournamentSizeRange.max = populationValue > 50? 50: populationValue;
+    eliteSizeRange.max = populationValue > 50? 50: populationValue;
+
+    // Adjust the value of the tournament size range if necessary
+    if (parseInt(tournamentSizeRange.value) > populationValue) {
+        tournamentSizeRange.value = Math.floor(populationValue / 3);
+        tournamentSizeCount.textContent = tournamentSizeRange.value;
+    } else {
+        tournamentSizeCount.textContent = tournamentSizeRange.value;
+    }
+
+    // Adjust the value of the elite size range if necessary
+    if (parseInt(eliteSizeRange.value) > populationValue) {
+        eliteSizeRange.value = Math.floor(populationValue / 3);
+        eliteCount.textContent = tournamentSizeRange.value;
+    } else {
+        eliteCount.textContent = tournamentSizeRange.value;
+    }
 });
 
 greedyRange.addEventListener("input", () => {
