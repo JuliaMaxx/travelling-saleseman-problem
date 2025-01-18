@@ -25,6 +25,10 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-image: url(world.svg);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #canvas {
