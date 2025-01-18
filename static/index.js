@@ -46,8 +46,9 @@ let isPaused = false;
 
 // Clear everything on page load
 window.onload = function() {
+    lineGroup.selectAll('path').remove();
     socket.emit('get_points', { numPoints: numPoints });
-    
+    socket.emit('stop_algorithm', {});
 };
 
 
@@ -115,6 +116,7 @@ eliteCheck.addEventListener("change", () => {
 // Trigger the selected algorithm on button click
 playBtn.addEventListener('click', () => {
     if (!isPaused) {
+        lineGroup.selectAll('path').remove();
         const selectedAlgorithm = algorithmSelect.value;
         let averageNum = 1;
         let populationSize = 50;
@@ -166,7 +168,7 @@ playBtn.addEventListener('click', () => {
         isPaused = false;
     } else {
         // Resume the algorithm when paused
-        socket.emit('resume_algorithm');
+        socket.emit('resume_algorithm', {});
         playBtn.disabled = true;
         pauseBtn.disabled = false;
         stopBtn.disabled = false;
@@ -176,7 +178,7 @@ playBtn.addEventListener('click', () => {
 
 pauseBtn.addEventListener("click", () => {
     // Pause the algorithm
-    socket.emit('pause_algorithm');
+    socket.emit('pause_algorithm', {});
     pauseBtn.disabled = true;
     // Change to Resume
     playBtn.textContent = 'Resume';
@@ -187,7 +189,7 @@ pauseBtn.addEventListener("click", () => {
 
 stopBtn.addEventListener("click", () => {
     // Stop the algorithm
-    socket.emit('stop_algorithm');
+    socket.emit('stop_algorithm', {});
     playBtn.disabled = false;
     // Reset the button text to "Play"
     playBtn.textContent = 'Play';
@@ -242,6 +244,17 @@ socket.on('update_lines', function(data) {
     const points = data.points
     const type = data.type
     updateLines(solution, points, type);
+});
+
+socket.on('algorithm_finished', function(data) {
+    // Stop the algorithm
+    socket.emit('stop_algorithm', {});
+    playBtn.disabled = false;
+    // Reset the button text to "Play"
+    playBtn.textContent = 'Play';
+    pauseBtn.disabled = true;
+    stopBtn.disabled = true;
+    isPaused = false;
 });
 
 

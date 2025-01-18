@@ -62,17 +62,24 @@ def greedy_solution(starting_point, socketio):
 def random_solution(socketio):
    solution = list(range(len(config.POINTS)))
    random.shuffle(solution)
-   
+   # Wait if paused
+   config.pause_event.wait()
    # Ensure the solution returns to the starting city
    solution.append(solution[0])
-   socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
+   if not config.stop_event.is_set():
+        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
    return solution
 
 # Average of random solutions
 def average_of_random(amount, socketio):
     for _ in range(amount):
+        if config.stop_event.is_set():
+            return
+        # Wait if paused
+        config.pause_event.wait()
         time.sleep(config.VISUALIZATION_DELAY)
-        solution = random_solution(socketio)      
+        solution = random_solution(socketio)   
+    socketio.emit('algorithm_finished', {})   
     return solution 
 
 # Genetic algorithm

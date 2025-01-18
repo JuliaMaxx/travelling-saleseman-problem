@@ -3,9 +3,12 @@ from flask_socketio import SocketIO, emit
 import random
 from algorithms import greedy_solution, random_solution, average_of_random, genetic
 import config
+import threading
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+config.pause_event.set()
 
 @app.route('/')
 def home():
@@ -20,7 +23,10 @@ def handle_points(data):
     
 # Event to start the selected algorithm
 @socketio.on('start_algorithm')
-def start_greedy_algorithm(data):
+def start_algorithm(data):
+    # Reset control flags
+    config.stop_event.clear()
+    config.pause_event.set()
     algorithm = data['algorithm']
     # Greedy
     if algorithm == 'greedy':
@@ -31,7 +37,7 @@ def start_greedy_algorithm(data):
         if average_num == 1:
             random_solution(socketio)
         else:
-            average_of_random(average_num, socketio)
+            threading.Thread(target=average_of_random, args=(average_num, socketio), daemon=True).start()
     # Genetic        
     elif algorithm == "genetic":
         genetic(
@@ -44,7 +50,23 @@ def start_greedy_algorithm(data):
             data['selection'],
             data['tournamentSize'],
             data['elite'],
-            data['eliteSize'], socketio)         
+            data['eliteSize'], socketio)    
+
+# Event to pause the algorithm 
+@socketio.on('pause_algorithm')
+def pause_algorithm(data):
+    config.pause_event.clear() 
+   
+# Event to pause the algorithm 
+@socketio.on('resume_algorithm')
+def resume_algorithm(data):
+    config.pause_event.set()    
+
+# Event to pause the algorithm 
+@socketio.on('stop_algorithm')
+def stop_algorithm(data):
+    config.stop_event.set()
+    config.pause_event.set()     
         
 @socketio.on('update_delay')
 def update_delay(data):
