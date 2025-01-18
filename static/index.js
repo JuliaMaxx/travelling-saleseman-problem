@@ -50,6 +50,7 @@ window.onload = function() {
     socket.emit('get_points', { numPoints: numPoints });
     socket.emit('stop_algorithm', {});
     playBtn.disabled = true;
+    algorithmSelect.disabled = false;
     isPaused = false;
 };
 
@@ -121,6 +122,9 @@ eliteCheck.addEventListener("change", () => {
 
 // Trigger the selected algorithm on button click
 playBtn.addEventListener('click', () => {
+    if (!algorithmSelect.value == "random" || averageCheck.checked){
+        algorithmSelect.disabled = true;
+    }
     if (!isPaused) {
         lineGroup.selectAll('path').remove();
         const selectedAlgorithm = algorithmSelect.value;
@@ -203,6 +207,7 @@ pauseBtn.addEventListener("click", () => {
 stopBtn.addEventListener("click", () => {
     // Stop the algorithm
     socket.emit('stop_algorithm', {});
+    algorithmSelect.disabled = false;
     lineGroup.selectAll('path').remove();
     playBtn.disabled = false;
     // Reset the button text to "Play"
@@ -268,6 +273,7 @@ socket.on('algorithm_finished', function(data) {
     playBtn.textContent = 'Play';
     pauseBtn.disabled = true;
     stopBtn.disabled = true;
+    algorithmSelect.disabled = false;
 });
 
 
