@@ -203,6 +203,7 @@ pauseBtn.addEventListener("click", () => {
 stopBtn.addEventListener("click", () => {
     // Stop the algorithm
     socket.emit('stop_algorithm', {});
+    lineGroup.selectAll('path').remove();
     playBtn.disabled = false;
     // Reset the button text to "Play"
     playBtn.textContent = 'Play';

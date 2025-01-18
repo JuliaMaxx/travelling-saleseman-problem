@@ -36,6 +36,11 @@ def greedy_solution(starting_point, socketio):
         next_city = -1
         
         for i in remaining_indexes:
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                return
+            config.pause_event.wait()
+            
             distance = distance_between(
                 config.POINTS[i]['x'], config.POINTS[starting_point]['x'],
                 config.POINTS[i]['y'], config.POINTS[starting_point]['y']
@@ -48,14 +53,21 @@ def greedy_solution(starting_point, socketio):
         starting_point = next_city
         
         time.sleep(config.VISUALIZATION_DELAY)
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+            return
+        config.pause_event.wait()
+        
         # Emit the current state of the solution to the frontend
         socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
         # Sleep for a short amount of time to visualize the progress
-        time.sleep(config.VISUALIZATION_DELAY)
+        time.sleep(config.VISUALIZATION_DELAY)  
         
     solution.append(solution[0])
-    socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
+    if not config.stop_event.is_set():
+        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
     print(fitness(solution))
+    socketio.emit('algorithm_finished', {})   
     return solution
 
 # Random solution
@@ -73,10 +85,11 @@ def random_solution(socketio):
 # Average of random solutions
 def average_of_random(amount, socketio):
     for _ in range(amount):
+        # Pause / Resume / Stop
         if config.stop_event.is_set():
             return
-        # Wait if paused
         config.pause_event.wait()
+        
         time.sleep(config.VISUALIZATION_DELAY)
         solution = random_solution(socketio)   
     socketio.emit('algorithm_finished', {})   
