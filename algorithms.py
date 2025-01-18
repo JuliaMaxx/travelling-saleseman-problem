@@ -4,6 +4,9 @@ import random
 import bisect
 import config
 
+class StopAlgorithmException(Exception):
+    pass
+
 # Calculate distance between two points
 def distance_between(x1, x2, y1, y2):
     return round(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2), 3)
@@ -26,7 +29,7 @@ def fitness(solution):
     return round(total_distance, 3)
 
 # Greedy algorithm to find a solution starting from a specific point
-def greedy_solution(starting_point, socketio):
+def greedy_solution(starting_point, socketio, additional):
     remaining_indexes = list(range(len(config.POINTS)))
     solution = [starting_point]
     
@@ -38,6 +41,8 @@ def greedy_solution(starting_point, socketio):
         for i in remaining_indexes:
             # Pause / Resume / Stop
             if config.stop_event.is_set():
+                if additional:
+                    raise StopAlgorithmException()
                 return
             config.pause_event.wait()
             
@@ -55,6 +60,8 @@ def greedy_solution(starting_point, socketio):
         time.sleep(config.VISUALIZATION_DELAY)
         # Pause / Resume / Stop
         if config.stop_event.is_set():
+            if additional:
+                    raise StopAlgorithmException()
             return
         config.pause_event.wait()
         
@@ -67,7 +74,8 @@ def greedy_solution(starting_point, socketio):
     if not config.stop_event.is_set():
         socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
     print(fitness(solution))
-    socketio.emit('algorithm_finished', {})   
+    if not additional:
+        socketio.emit('algorithm_finished', {})   
     return solution
 
 # Random solution
@@ -78,6 +86,8 @@ def random_solution(socketio):
    config.pause_event.wait()
    # Ensure the solution returns to the starting city
    solution.append(solution[0])
+    
+   time.sleep(config.VISUALIZATION_DELAY)
    if not config.stop_event.is_set():
         socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
    return solution
@@ -97,61 +107,117 @@ def average_of_random(amount, socketio):
 
 # Genetic algorithm
 def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, socketio):
-    n = 1
-    population = initial_population(population_size, greedy_ratio, socketio)
-    
-    print(f"Epoch {n}")
-    population_info(population)
-    
-    while n < number_of_epochs:
-        new_population = []
-        existing_individuals = set(new_population)
+    try:
+        n = 1
+        population = initial_population(population_size, greedy_ratio, socketio)
         
-        if elitism:
-            elite = elite_selection(population, elite_size)
-            new_population.extend(elite)
-            existing_individuals.update(tuple(ind) for ind in elite)
+        print(f"Epoch {n}")
+        population_info(population)
+        
+        while n < number_of_epochs:
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                return
+            config.pause_event.wait()
             
-        while len(new_population) < len(population):
-            # Select parents
-            parent1, parent2 = select_parents(population, selection, tournament_size)
+            new_population = []
+            existing_individuals = set(new_population)
+            
+            if elitism:
+                elite = elite_selection(population, elite_size)
+                new_population.extend(elite)
+                existing_individuals.update(tuple(ind) for ind in elite)
+                
+            while len(new_population) < len(population):
+                # Select parents
+                parent1, parent2 = select_parents(population, selection, tournament_size)
+                
+                time.sleep(config.VISUALIZATION_DELAY)
+                
+                # Pause / Resume / Stop
+                if config.stop_event.is_set():
+                    return
+                config.pause_event.wait()
+                
+                if not config.stop_event.is_set():
+                    socketio.emit('update_lines', {'solution': parent1, 'points': config.POINTS, 'type':'parent'})
+                    
+                time.sleep(config.VISUALIZATION_DELAY)
+                
+                # Pause / Resume / Stop
+                if config.stop_event.is_set():
+                    return
+                config.pause_event.wait()
+                
+                if not config.stop_event.is_set():
+                    socketio.emit('update_lines', {'solution': parent2, 'points': config.POINTS, 'type':'parent'})
+                
+                # Pause / Resume / Stop
+                if config.stop_event.is_set():
+                    return
+                config.pause_event.wait()
+            
+                # Perform chosen crossover
+                match crossover:
+                    case 1:  
+                        child = ordered_crossover(parent1, parent2)
+                    case 2:  
+                        child = partially_matched_crossover(parent1, parent2)
+                    case 3:  
+                        child = cycle_crossover(parent1, parent2)     
+                
+                time.sleep(config.VISUALIZATION_DELAY)
+                
+                # Pause / Resume / Stop
+                if config.stop_event.is_set():
+                    return
+                config.pause_event.wait()
+                
+                if not config.stop_event.is_set():
+                    socketio.emit('update_lines', {'solution': child, 'points': config.POINTS, 'type':'crossover'})
+                    
+                # Apply chosen mutation
+                match mutation:
+                    case 1:
+                        mutated_child = mutation_inversion(mutation_probability, child)
+                    case 2:
+                        mutated_child = mutation_swap(mutation_probability, child)
+                        
+                time.sleep(config.VISUALIZATION_DELAY)
+                
+                # Pause / Resume / Stop
+                if config.stop_event.is_set():
+                    return
+                config.pause_event.wait()
+                
+                if not config.stop_event.is_set():
+                    socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS, 'type':'mutation'})
+                    
+                # Add to the new population
+                if tuple(mutated_child) not in existing_individuals:
+                    new_population.append(mutated_child)
+                    existing_individuals.add(tuple(mutated_child))
+            # Update for the next epoch
+            population = new_population
+            n += 1
+            
+            print(f"\nEpoch {n}")
+            best = population_info(population)
+            
             time.sleep(config.VISUALIZATION_DELAY)
-            socketio.emit('update_lines', {'solution': parent1, 'points': config.POINTS, 'type':'parent'})
-            time.sleep(config.VISUALIZATION_DELAY)
-            socketio.emit('update_lines', {'solution': parent2, 'points': config.POINTS, 'type':'parent'})
-            # Perform chosen crossover
-            match crossover:
-                case 1:  
-                    child = ordered_crossover(parent1, parent2)
-                case 2:  
-                    child = partially_matched_crossover(parent1, parent2)
-                case 3:  
-                    child = cycle_crossover(parent1, parent2)
-            time.sleep(config.VISUALIZATION_DELAY)
-            socketio.emit('update_lines', {'solution': child, 'points': config.POINTS, 'type':'crossover'})
-            # Apply chosen mutation
-            match mutation:
-                case 1:
-                    mutated_child = mutation_inversion(mutation_probability, child)
-                case 2:
-                    mutated_child = mutation_swap(mutation_probability, child)
-        
-            time.sleep(config.VISUALIZATION_DELAY)
-            socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS, 'type':'mutation'})
-            # Add to the new population
-            if tuple(mutated_child) not in existing_individuals:
-                new_population.append(mutated_child)
-                existing_individuals.add(tuple(mutated_child))
-        # Update for the next epoch
-        population = new_population
-        n += 1
-        
-        print(f"\nEpoch {n}")
-        best = population_info(population)
-        time.sleep(config.VISUALIZATION_DELAY)
-        socketio.emit('update_lines', {'solution': best, 'points': config.POINTS, 'type':'best'})
-        
-    return population
+            
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                return
+            config.pause_event.wait()
+            
+            if not config.stop_event.is_set():
+                socketio.emit('update_lines', {'solution': best, 'points': config.POINTS, 'type':'best'})
+            
+        socketio.emit('algorithm_finished', {})       
+        return population
+    except StopAlgorithmException:
+        return
 
 
 # Genetic algorithm functions
@@ -159,16 +225,27 @@ def initial_population(size, greedy_ratio, socketio):
     print(size)
     print(greedy_ratio)
     population = []
+    additional = True
     
     # How many there should be of greedy and random solutions
     size_greedy = int(size * greedy_ratio)
     size_random = size - size_greedy
     
     for _ in range(size_greedy):
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         starting_point = random.choice(list(range(len(config.POINTS))))
-        population.append(greedy_solution(starting_point, socketio))
+        population.append(greedy_solution(starting_point, socketio, additional))
         
     for _ in range(size_random):
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         population.append(random_solution(socketio))
         
     random.shuffle(population)
@@ -182,6 +259,11 @@ def population_info(population):
     total_distance = 0
     best_solution = []
     for solution in population:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         distance = fitness(solution)
         total_distance += distance
         if distance < best_distance:
@@ -197,6 +279,11 @@ def population_info(population):
     return best_solution
     
 def tournament(population, tournament_size):
+    # Pause / Resume / Stop
+    if config.stop_event.is_set():
+            raise StopAlgorithmException()
+    config.pause_event.wait()
+    
     # Take a random sample out of population 
     contestants = random.sample(population, tournament_size)
     
@@ -205,6 +292,11 @@ def tournament(population, tournament_size):
     
     # Determine the best one out of the sample
     for contestant in contestants:
+       # Pause / Resume / Stop
+       if config.stop_event.is_set():
+            raise StopAlgorithmException()
+       config.pause_event.wait()
+         
        distance = fitness(contestant)
        if  distance < best_distance:
            best_distance = distance
@@ -214,6 +306,11 @@ def tournament(population, tournament_size):
 def elite_selection(population, elite_size):
     elite = []
     for solution in population:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         solution_fitness = fitness(solution)
         
         # If there is no initial elite
@@ -232,6 +329,11 @@ def elite_selection(population, elite_size):
     return [x[0] for x in elite]
 
 def roulette_selection(population):
+    # Pause / Resume / Stop
+    if config.stop_event.is_set():
+            raise StopAlgorithmException()
+    config.pause_event.wait()
+        
     # Calculate fitness for each solution
     distances = [fitness(solution) for solution in population]
     distance_of_all = sum(distances)
@@ -240,6 +342,11 @@ def roulette_selection(population):
     cumulative_distances = []
     cumulative_sum = 0
     for distance in distances:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         cumulative_sum += distance / distance_of_all
         cumulative_distances.append(cumulative_sum)
     
@@ -272,6 +379,11 @@ def ordered_crossover(parent1,  parent2):
     # Fill up all the gaps with numbers from parent 2
     index = 0
     for i in range(len(offspring)):
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         if offspring[i] is None:
             if index < len(sub_parent2):
                 offspring[i] = sub_parent2[index] 
@@ -299,6 +411,11 @@ def partially_matched_crossover(parent1, parent2):
     
     # Fill the remaining positions
     for i in range(len(parent2)):
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         if offspring[i] is None:
             value = parent2[i]
             while value in mapping and value in offspring:
@@ -327,8 +444,19 @@ def cycle_crossover(parent1, parent2):
     
     while None in offspring:  # Continue until all positions are filled
         current = cycle_start
+        
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         # Follow the cycle until we return to the start
         while not visited[current]:
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                    raise StopAlgorithmException()
+            config.pause_event.wait()
+            
             visited[current] = True
             # Place the element from parent1 in the offspring
             offspring[current] = parent1[current]
@@ -348,6 +476,11 @@ def cycle_crossover(parent1, parent2):
 def mutation_swap(mutation_probability, child):
     solution = child.copy()
     if random.random() <= mutation_probability:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         # Get two random cities in the solution
         first_city_index = random.randint(1, len(solution) - 2)
         second_city_index = random.randint(1, len(solution) - 2)
@@ -364,6 +497,11 @@ import random
 def mutation_inversion(mutation_probability, child):
     solution = child.copy()
     if random.random() <= mutation_probability:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+                raise StopAlgorithmException()
+        config.pause_event.wait()
+        
         # Get two random cities in the solution
         first_index = random.randint(1, len(solution) - 2)
         last_index = random.randint(1, len(solution) - 2)
@@ -377,6 +515,11 @@ def mutation_inversion(mutation_probability, child):
     return solution
 
 def select_parents(population, selection, tournament_size):
+    # Pause / Resume / Stop
+    if config.stop_event.is_set():
+            raise StopAlgorithmException()
+    config.pause_event.wait()
+    
     match selection:
         case 1:
             return random.sample([roulette_selection(population) for _ in range(2)], 2)

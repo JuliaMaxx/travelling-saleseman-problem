@@ -30,7 +30,7 @@ def start_algorithm(data):
     algorithm = data['algorithm']
     # Greedy
     if algorithm == 'greedy':
-        greedy_solution(0, socketio)
+        greedy_solution(0, socketio, False)
     # Random
     elif algorithm == 'random':
         average_num = data['averageNum']
