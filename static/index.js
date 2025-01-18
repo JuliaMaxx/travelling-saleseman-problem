@@ -49,6 +49,8 @@ window.onload = function() {
     lineGroup.selectAll('path').remove();
     socket.emit('get_points', { numPoints: numPoints });
     socket.emit('stop_algorithm', {});
+    playBtn.disabled = true;
+    isPaused = false;
 };
 
 
@@ -69,9 +71,13 @@ speedRange.addEventListener("input", () => {
 
 // Show or hide options based on the selected options
 algorithmSelect.addEventListener("change", () => {
+    playBtn.disabled = false;
     if (algorithmSelect.value === "random") {
         randomOptions.style.display = "block";
-
+        if (!averageCheck.checked){
+            pauseBtn.disabled = true;
+            stopBtn.disabled = true;
+        }
         // hide genetic algorithm options
         geneticOptions.style.display = "none";
     }
@@ -161,11 +167,18 @@ playBtn.addEventListener('click', () => {
             mutationProbability: mutationProbability,
             epochNum: epochNum
         });
-        // Start the algorithm
-        playBtn.disabled = true;
-        pauseBtn.disabled = false;
-        stopBtn.disabled = false;
-        isPaused = false;
+
+        if (algorithmSelect.value === 'random' && !averageCheck.checked){
+            pauseBtn.disabled = true;
+            stopBtn.disabled = true;
+        }
+        else
+        {
+            // Start the algorithm
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+            stopBtn.disabled = false;
+        }
     } else {
         // Resume the algorithm when paused
         socket.emit('resume_algorithm', {});
@@ -254,7 +267,6 @@ socket.on('algorithm_finished', function(data) {
     playBtn.textContent = 'Play';
     pauseBtn.disabled = true;
     stopBtn.disabled = true;
-    isPaused = false;
 });
 
 
