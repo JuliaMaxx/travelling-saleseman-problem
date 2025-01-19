@@ -18,7 +18,7 @@ def home():
 @socketio.on('get_points')
 def handle_points(data):
     num_points = data['numPoints']
-    config.POINTS = [{'x': random.randint(50, 1150), 'y': random.randint(50, 650)} for _ in range(num_points)]
+    config.POINTS = [{'x': random.randint(50, 1350), 'y': random.randint(30, 820)} for _ in range(num_points)]
     emit('receive_points', {'points': config.POINTS})
     
 # Event to start the selected algorithm
