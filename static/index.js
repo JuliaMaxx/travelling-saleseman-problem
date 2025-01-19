@@ -68,6 +68,7 @@ window.onload = function() {
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
     isPaused = false;
+    resetAllText();
 };
 
 manual.addEventListener("click", () => {
@@ -119,6 +120,7 @@ speedRange.addEventListener("input", () => {
 algorithmSelect.addEventListener("change", () => {
     algorithmSet = true;
     playBtn.disabled = false;
+    resetAllText();
     if (algorithmSelect.value === "random") {
         randomOptions.style.display = "block";
         if (!averageCheck.checked){
@@ -268,6 +270,7 @@ stopBtn.addEventListener("click", () => {
     stopBtn.disabled = true;
     isPaused = false;
     manual.disabled = false;
+    resetAllText();
 });
 
 // Update range span values
@@ -516,4 +519,13 @@ function stopTimer() {
     elapsedTimeInSeconds = 0;
     clearInterval(intervalId);
     intervalId = null;
+}
+
+
+function resetAllText(){
+    elapsedTime.textContent = "Elapsed Time: 0";
+    bestDistance.textContent = "Best distance: 0";
+    worseDistance.textContent = "Worse distance: 0";
+    averageDistance.textContent = "Average distance: 0";
+    epoch.textContent = "Epoch 0";
 }
