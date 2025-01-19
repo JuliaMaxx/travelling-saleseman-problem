@@ -14,6 +14,7 @@ const bestDistance = document.getElementById("bestDistance");
 const worseDistance = document.getElementById("worseDistance");
 const averageDistance = document.getElementById("averageDistance");
 const epoch = document.getElementById("epoch");
+const elapsedTime = document.getElementById("elapsedTime");
 
 // Drawing points
 const pointRange = document.getElementById("pointRange");
@@ -171,9 +172,9 @@ playBtn.addEventListener('click', () => {
         pointRange.disabled = true;
         manual.disabled = true;
         algorithmSelect.disabled = true;
+        startTimer();
     }
     if (!isPaused) {
-        startTimer();
         lineGroup.selectAll('path').remove();
         const selectedAlgorithm = algorithmSelect.value;
         let averageNum = 1;
@@ -255,7 +256,7 @@ pauseBtn.addEventListener("click", () => {
 
 stopBtn.addEventListener("click", () => {
     // Stop the algorithm
-    stopTimer();
+    stopTimer(intervalId);
     socket.emit('stop_algorithm', {});
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
@@ -350,7 +351,7 @@ socket.on('update_lines', function(data) {
 socket.on('algorithm_finished', function(data) {
     // Stop the algorithm
     socket.emit('stop_algorithm', {});
-    stopTimer();
+    stopTimer(intervalId);
     playBtn.disabled = false;
     // Reset the button text to "Play"
     playBtn.textContent = 'Play';
@@ -500,21 +501,19 @@ function calculatePossiblePaths(numPoints) {
 }
 
 // Begin counting elapsed time
-function startTimer() {
-    // Reset elapsed time
-    elapsedTimeInSeconds = 0;
-    
-    // Update the display
-    document.getElementById("elapsedTime").textContent = `Elapsed Time: ${elapsedTimeInSeconds}`;
-
-    // Start the interval that increments every second
-    intervalId = setInterval(() => {
-        elapsedTimeInSeconds++;
-        document.getElementById("elapsedTime").textContent = `Elapsed Time: ${elapsedTimeInSeconds}`;
-    }, 1000); // Increment every 1000 ms (1 second)
+function startTimer() {   
+    if (intervalId === null) {
+        intervalId = setInterval(() => {
+            if (!isPaused) { // Update only if not paused
+                elapsedTimeInSeconds++;
+                elapsedTime.textContent = `Elapsed Time: ${elapsedTimeInSeconds}`;
+            }
+        }, 1000);
+    }
 }
 
 function stopTimer() {
+    elapsedTimeInSeconds = 0;
     clearInterval(intervalId);
     intervalId = null;
 }
