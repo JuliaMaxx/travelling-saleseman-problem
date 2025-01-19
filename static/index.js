@@ -7,6 +7,7 @@ const stopBtn = document.getElementById("stopBtn");
 const algorithmSelect = document.getElementById("algorithmSelect");
 const speedRange = document.getElementById("speed");
 const speedCount = document.getElementById("speedCount");
+const possiblePaths = document.getElementById("possiblePaths");
 
 // Drawing points
 const pointRange = document.getElementById("pointRange");
@@ -353,6 +354,7 @@ const circleGroup = svg.append('g').attr('class', 'circles');
 
 
 function updatePoints() {
+        possiblePaths.innerText = calculatePossiblePaths(points.length);
         // Clear the circles and lines from the canvas
         circleGroup.selectAll('circle').remove();
         lineGroup.selectAll('path').remove();
@@ -447,3 +449,32 @@ function handleCanvasClick(event) {
 
 // Add the click event listener to the canvas
 svg.on('click', handleCanvasClick);
+
+
+function factorial(n) {
+    if (n <= 1) return 1;
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+function calculatePossiblePaths(numPoints) {
+    // Calculate factorial (numPoints - 1)!
+    let fact = factorial(numPoints - 1);
+
+    // Find the exponent of 10
+    let exponent = Math.floor(Math.log10(fact));
+    
+    // Normalize the number in the form of n * 10^m
+    let mantissa = fact / Math.pow(10, exponent);
+    
+    // Round mantissa to 3 decimal places for simplicity
+    mantissa = mantissa.toFixed(3);
+    if (isNaN(mantissa)){
+        return "infinity"
+    }
+    
+    return `${mantissa} * 10^${exponent}`;
+}
