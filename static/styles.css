@@ -16,6 +16,7 @@ nav {
     background-color: rgb(80, 97, 80);
     height: 100%;
     width: 450px;
+    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.236);
 }
 
 
