@@ -11,8 +11,8 @@ const speedCount = document.getElementById("speedCount");
 // Drawing points
 const pointRange = document.getElementById("pointRange");
 const pointCount = document.getElementById("pointCount");
-const manualCheck = document.getElementById("manualCheck");
-const finishButton = document.getElementById("finishButton");
+const random = document.getElementById('random');
+const manual = document.getElementById('manual');
 
 // Random algorithm
 const randomOptions = document.getElementById("randomOptions");
@@ -47,6 +47,7 @@ let points = [];
 let isPaused = false;
 let isSelecting = false;
 const MAX_POINTS = 200;
+let algorithmSet = false
 
 // Clear everything on page load
 window.onload = function() {
@@ -59,20 +60,32 @@ window.onload = function() {
     isPaused = false;
 };
 
-manualCheck.addEventListener("change", () => {
-    if (!manualCheck.checked){
-        pointRange.disabled = false;
-        socket.emit('get_points', { numPoints: numPoints, manual: false });
-        isSelecting = false;
-        finishButton.style.display = "none";
-    }
-    else{
-        finishButton.disabled = false;
+manual.addEventListener("click", () => {
+    if (!isSelecting){
+        points = []
+        manual.innerText = "Finish";
         isSelecting = true;
         pointRange.disabled = true;
         circleGroup.selectAll('circle').remove();
-        finishButton.style.display = "block";
-        points = [];
+        lineGroup.selectAll('path').remove();
+        algorithmSelect.disabled = true;
+        playBtn.disabled = true;
+        pauseBtn.disabled = true;
+        stopBtn.disabled = true;
+    }
+    else {
+        if (points.length < 1){
+            pointRange.disabled = false;
+            socket.emit('get_points', { numPoints: numPoints, manual: false });
+            isSelecting = false;
+        }
+        algorithmSelect.disabled = false;
+        pointRange.disabled = false;
+        playBtn.innerText = "Play";
+        playBtn.disabled = algorithmSet? false: true;
+        isSelecting = false;
+        manual.innerText = "Manual";
+        socket.emit('get_points', { numPoints: points, manual: true });
     }
 });
 
@@ -94,6 +107,7 @@ speedRange.addEventListener("input", () => {
 
 // Show or hide options based on the selected options
 algorithmSelect.addEventListener("change", () => {
+    algorithmSet = true;
     playBtn.disabled = false;
     if (algorithmSelect.value === "random") {
         randomOptions.style.display = "block";
@@ -146,6 +160,7 @@ eliteCheck.addEventListener("change", () => {
 playBtn.addEventListener('click', () => {
     if (algorithmSelect.value != "random" || averageCheck.checked){
         pointRange.disabled = true;
+        manual.disabled = true;
         algorithmSelect.disabled = true;
     }
     if (!isPaused) {
@@ -239,6 +254,7 @@ stopBtn.addEventListener("click", () => {
     pauseBtn.disabled = true;
     stopBtn.disabled = true;
     isPaused = false;
+    manual.disabled = false;
 });
 
 // Update range span values
@@ -321,6 +337,7 @@ socket.on('algorithm_finished', function(data) {
     stopBtn.disabled = true;
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
+    manual.disabled = false;
 });
 
 
@@ -430,18 +447,3 @@ function handleCanvasClick(event) {
 
 // Add the click event listener to the canvas
 svg.on('click', handleCanvasClick);
-
-finishButton.addEventListener('click', () => {
-    if (isSelecting) {
-        if (points.length < 1){
-            pointRange.disabled = false;
-            socket.emit('get_points', { numPoints: numPoints, manual: false });
-            isSelecting = false;
-            finishButton.style.display = "none";
-            manualCheck.checked = false;
-        }
-        isSelecting = false;
-        finishButton.disabled = true;
-        socket.emit('get_points', { numPoints: points, manual: true });
-    }
-});
