@@ -7,7 +7,13 @@ const stopBtn = document.getElementById("stopBtn");
 const algorithmSelect = document.getElementById("algorithmSelect");
 const speedRange = document.getElementById("speed");
 const speedCount = document.getElementById("speedCount");
+
+// Info
 const possiblePaths = document.getElementById("possiblePaths");
+const bestDistance = document.getElementById("bestDistance");
+const worseDistance = document.getElementById("worseDistance");
+const averageDistance = document.getElementById("averageDistance");
+const epoch = document.getElementById("epoch");
 
 // Drawing points
 const pointRange = document.getElementById("pointRange");
@@ -318,6 +324,14 @@ speedRange.addEventListener("input", () => {
 socket.on('receive_points', function(data) {
     points = data.points;
     updatePoints();
+});
+
+// Display information about the epoch
+socket.on('update_info', function(data) {
+    bestDistance.textContent = `Best distance: ${data['best']}`
+    worseDistance.textContent = `Worse distance: ${data['worse']}`
+    averageDistance.textContent = `Average distance: ${data['average']}`
+    epoch.textContent = `Epoch ${data['epoch']}`
 });
 
 // Handle backend sending updates on algorithm progress

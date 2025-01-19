@@ -117,7 +117,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
         population = initial_population(population_size, greedy_ratio, socketio)
         
         print(f"Epoch {n}")
-        population_info(population)
+        population_info(population, socketio, n)
         
         while n < number_of_epochs:
             # Pause / Resume / Stop
@@ -207,7 +207,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
             n += 1
             
             print(f"\nEpoch {n}")
-            best = population_info(population)
+            best = population_info(population, socketio, n)
             
             time.sleep(config.VISUALIZATION_DELAY)
             
@@ -256,32 +256,46 @@ def initial_population(size, greedy_ratio, socketio):
     random.shuffle(population)
     return population
 
-def population_info(population):
+def population_info(population, socketio, n):
     size = len(population)
-    # Find the best, worst and average distance
-    best_distance =  float('inf')
-    worst_distance =  float('-inf')
+    
+    # Initialize variables for the best, worst, and total distance
+    best_distance = float('inf')
+    worst_distance = float('-inf')
     total_distance = 0
-    best_solution = []
+    best_solution = None
+
+    # Loop over the population
     for solution in population:
-        # Pause / Resume / Stop
+        # Pause / Resume / Stop event handling (handled once per iteration)
         if config.stop_event.is_set():
-                raise StopAlgorithmException()
+            raise StopAlgorithmException()
         config.pause_event.wait()
         
         distance = fitness(solution)
         total_distance += distance
+
+        # Track best and worst distances
         if distance < best_distance:
             best_distance = distance
             best_solution = solution
         if distance > worst_distance:
             worst_distance = distance
-    average_distance = round(total_distance / size, 3)
+
+    # Calculate and round the average distance
+    average_distance = total_distance / size if size else 0
+    average_distance = round(average_distance, 3)
+
+    # Print results (you could also consider logging instead of printing)
     print(f"Population size: {size}")
     print(f"Best distance: {best_distance}")
     print(f"Worst distance: {worst_distance}")
     print(f"Average distance: {average_distance}")
+    
+    socketio.emit('update_info', {'best': best_distance, 'worse': worst_distance, 'average': average_distance, 'epoch': n})
+    # Return the best solution found
     return best_solution
+
     
 def tournament(population, tournament_size):
     # Pause / Resume / Stop
