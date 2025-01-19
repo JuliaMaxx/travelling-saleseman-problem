@@ -11,6 +11,8 @@ const speedCount = document.getElementById("speedCount");
 // Drawing points
 const pointRange = document.getElementById("pointRange");
 const pointCount = document.getElementById("pointCount");
+const manualCheck = document.getElementById("manualCheck");
+const finishButton = document.getElementById("finishButton");
 
 // Random algorithm
 const randomOptions = document.getElementById("randomOptions");
@@ -43,17 +45,36 @@ const epochCount = document.getElementById("epochCount");
 let numPoints = parseInt(pointRange.value);
 let points = [];
 let isPaused = false;
+let isSelecting = false;
+const MAX_POINTS = 200;
 
 // Clear everything on page load
 window.onload = function() {
     lineGroup.selectAll('path').remove();
-    socket.emit('get_points', { numPoints: numPoints });
+    socket.emit('get_points', { numPoints: numPoints, manual: false });
     socket.emit('stop_algorithm', {});
     playBtn.disabled = true;
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
     isPaused = false;
 };
+
+manualCheck.addEventListener("change", () => {
+    if (!manualCheck.checked){
+        pointRange.disabled = false;
+        socket.emit('get_points', { numPoints: numPoints, manual: false });
+        isSelecting = false;
+        finishButton.style.display = "none";
+    }
+    else{
+        finishButton.disabled = false;
+        isSelecting = true;
+        pointRange.disabled = true;
+        circleGroup.selectAll('circle').remove();
+        finishButton.style.display = "block";
+        points = [];
+    }
+});
 
 
 // Update the displayed number of points based on the range slider
@@ -62,7 +83,7 @@ pointRange.addEventListener("input", () => {
     numPoints = parseInt(pointRange.value);
 
     // Send request to backend for new points
-    socket.emit('get_points', { numPoints: numPoints });
+    socket.emit('get_points', { numPoints: numPoints, manual: false });
 });
 
 // Update the speed of the algorithm
@@ -376,3 +397,51 @@ function updateLines(solution, points, type) {
        .attr('stroke', lineColor)
        .attr('stroke-width', 2.5);
 }
+
+// Define the range for valid point selection
+const validRange = {
+    xMin: 50,
+    xMax: 1350,
+    yMin: 30,
+    yMax: 820,
+};
+
+// Function to handle canvas clicks
+function handleCanvasClick(event) {
+    if (!isSelecting) return;
+    if (points.length >= MAX_POINTS) {
+        alert(`You can select a maximum of ${MAX_POINTS} points.`);
+        return;
+    }
+    // Get the position of the click relative to the canvas
+    const rect = svg.node().getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    // Check if the click is within the valid range
+    if (x >= validRange.xMin && x <= validRange.xMax && y >= validRange.yMin && y <= validRange.yMax) {
+        // Add the new point to the array
+        points.push({ x, y });
+
+        // Update the canvas
+        updatePoints();
+    }
+}
+
+// Add the click event listener to the canvas
+svg.on('click', handleCanvasClick);
+
+finishButton.addEventListener('click', () => {
+    if (isSelecting) {
+        if (points.length < 1){
+            pointRange.disabled = false;
+            socket.emit('get_points', { numPoints: numPoints, manual: false });
+            isSelecting = false;
+            finishButton.style.display = "none";
+            manualCheck.checked = false;
+        }
+        isSelecting = false;
+        finishButton.disabled = true;
+        socket.emit('get_points', { numPoints: points, manual: true });
+    }
+});

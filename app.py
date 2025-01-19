@@ -17,9 +17,14 @@ def home():
 # Event to send points from backend to frontend
 @socketio.on('get_points')
 def handle_points(data):
+    manual = data['manual']
     num_points = data['numPoints']
-    config.POINTS = [{'x': random.randint(50, 1350), 'y': random.randint(30, 820)} for _ in range(num_points)]
-    emit('receive_points', {'points': config.POINTS})
+    if not manual:
+        config.POINTS = [{'x': random.randint(50, 1350), 'y': random.randint(30, 820)} for _ in range(num_points)]
+        emit('receive_points', {'points': config.POINTS})
+    else:
+        config.POINTS = num_points
+        
     
 # Event to start the selected algorithm
 @socketio.on('start_algorithm')
