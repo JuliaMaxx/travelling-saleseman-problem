@@ -54,7 +54,9 @@ let points = [];
 let isPaused = false;
 let isSelecting = false;
 const MAX_POINTS = 200;
-let algorithmSet = false
+let algorithmSet = false;
+let elapsedTimeInSeconds = 0;
+let intervalId = null; 
 
 // Clear everything on page load
 window.onload = function() {
@@ -171,6 +173,7 @@ playBtn.addEventListener('click', () => {
         algorithmSelect.disabled = true;
     }
     if (!isPaused) {
+        startTimer();
         lineGroup.selectAll('path').remove();
         const selectedAlgorithm = algorithmSelect.value;
         let averageNum = 1;
@@ -231,6 +234,7 @@ playBtn.addEventListener('click', () => {
     } else {
         // Resume the algorithm when paused
         socket.emit('resume_algorithm', {});
+        startTimer();
         playBtn.disabled = true;
         pauseBtn.disabled = false;
         stopBtn.disabled = false;
@@ -251,6 +255,7 @@ pauseBtn.addEventListener("click", () => {
 
 stopBtn.addEventListener("click", () => {
     // Stop the algorithm
+    stopTimer();
     socket.emit('stop_algorithm', {});
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
@@ -345,6 +350,7 @@ socket.on('update_lines', function(data) {
 socket.on('algorithm_finished', function(data) {
     // Stop the algorithm
     socket.emit('stop_algorithm', {});
+    stopTimer();
     playBtn.disabled = false;
     // Reset the button text to "Play"
     playBtn.textContent = 'Play';
@@ -491,4 +497,24 @@ function calculatePossiblePaths(numPoints) {
     }
     
     return `${mantissa} * 10^${exponent}`;
+}
+
+// Begin counting elapsed time
+function startTimer() {
+    // Reset elapsed time
+    elapsedTimeInSeconds = 0;
+    
+    // Update the display
+    document.getElementById("elapsedTime").textContent = `Elapsed Time: ${elapsedTimeInSeconds}`;
+
+    // Start the interval that increments every second
+    intervalId = setInterval(() => {
+        elapsedTimeInSeconds++;
+        document.getElementById("elapsedTime").textContent = `Elapsed Time: ${elapsedTimeInSeconds}`;
+    }, 1000); // Increment every 1000 ms (1 second)
+}
+
+function stopTimer() {
+    clearInterval(intervalId);
+    intervalId = null;
 }
