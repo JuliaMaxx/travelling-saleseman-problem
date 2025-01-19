@@ -16,6 +16,11 @@ def fitness(solution):
     total_distance = 0
     if len(solution) > 1:
         for i in range(len(solution) - 1):
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                raise StopAlgorithmException()
+            config.pause_event.wait()
+            
             # Calculate INDEXES
             current_index = solution[i]
             next_index = solution[i + 1]
@@ -335,7 +340,14 @@ def roulette_selection(population):
     config.pause_event.wait()
         
     # Calculate fitness for each solution
-    distances = [fitness(solution) for solution in population]
+    distances = []
+    for solution in population:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+            raise StopAlgorithmException()
+        config.pause_event.wait()
+        distances.append(fitness(solution)) 
+        
     distance_of_all = sum(distances)
     
     # Calculate cumulative probabilities in one step
@@ -363,6 +375,11 @@ def ordered_crossover(parent1,  parent2):
     # Make a list of the same size as parents
     offspring = [None] * len(parent1)
     
+    # Pause / Resume / Stop
+    if config.stop_event.is_set():
+        raise StopAlgorithmException()
+    config.pause_event.wait()
+        
     # Take a random slice from parent 1
     start_position = random.randint(0, len(parent1) - 1)
     end_position = random.randint(0, len(parent1) - 1)
@@ -371,7 +388,15 @@ def ordered_crossover(parent1,  parent2):
     sub_parent1 = parent1[start_position:end_position]
     
     # Take all the numbers from parent 2 that were not taken yet
-    sub_parent2 = [x for x in parent2 if x not in sub_parent1]
+    sub_parent2 = [] 
+    for x in parent2: 
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+            raise StopAlgorithmException()
+        config.pause_event.wait()
+        
+        if x not in sub_parent1:  
+            sub_parent2.append(x)
     
     # Set numbers from parent 1 in the same position in offspring
     offspring[start_position:end_position] = sub_parent1
@@ -407,7 +432,13 @@ def partially_matched_crossover(parent1, parent2):
     offspring[start:end] = parent1[start:end]
     
     # Create mappings for the crossover segment
-    mapping = {parent1[i]: parent2[i] for i in range(start, end)}
+    mapping = {}  # Initialize an empty dictionary
+    for i in range(start, end):
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+            raise StopAlgorithmException()
+        config.pause_event.wait()
+        mapping[parent1[i]] = parent2[i]
     
     # Fill the remaining positions
     for i in range(len(parent2)):
@@ -419,6 +450,11 @@ def partially_matched_crossover(parent1, parent2):
         if offspring[i] is None:
             value = parent2[i]
             while value in mapping and value in offspring:
+                # Pause / Resume / Stop
+                if config.stop_event.is_set():
+                    raise StopAlgorithmException()
+                config.pause_event.wait()
+                
                 value = mapping[value]
             offspring[i] = value
     
@@ -465,6 +501,11 @@ def cycle_crossover(parent1, parent2):
         
         # If any positions remain unfilled, swap to Parent 2
         for i in range(len(offspring)):
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                raise StopAlgorithmException()
+            config.pause_event.wait()
+            
             if offspring[i] is None:
                 offspring[i] = parent2[i]
 
@@ -520,8 +561,24 @@ def select_parents(population, selection, tournament_size):
             raise StopAlgorithmException()
     config.pause_event.wait()
     
-    match selection:
-        case 1:
-            return random.sample([roulette_selection(population) for _ in range(2)], 2)
-        case 2:
-            return random.sample([tournament(population, tournament_size) for _ in range(2)], 2)
+    if selection == 1:
+        selections = []
+        for _ in range(2):
+            # Pause / Resume / Stop
+            if config.stop_event.is_set():
+                raise StopAlgorithmException()
+            config.pause_event.wait()
+            
+            selections.append(roulette_selection(population))
+        return random.sample(selections, 2)
+    
+    elif selection == 2:
+        # Pause / Resume / Stop
+        if config.stop_event.is_set():
+            raise StopAlgorithmException()
+        config.pause_event.wait()
+        
+        selections = []
+        for _ in range(2):
+            selections.append(tournament(population, tournament_size))
+        return random.sample(selections, 2)
