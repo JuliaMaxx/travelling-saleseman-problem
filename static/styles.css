@@ -38,6 +38,13 @@ hr{
     background-color: rgb(180, 199, 183);
     margin: 10px 0;
 }
+.info {
+    color:rgb(180, 199, 183);
+}
+#epoch {
+    font-size: 40px;
+    font-family: "Indie Flower", cursive;
+}
 
 /* BUTTON */
 button {

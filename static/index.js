@@ -498,10 +498,9 @@ function calculatePossiblePaths(numPoints) {
     // Round mantissa to 3 decimal places for simplicity
     mantissa = mantissa.toFixed(3);
     if (isNaN(mantissa)){
-        return "infinity"
+        return "Possibilities: infinity"
     }
-    
-    return `${mantissa} * 10^${exponent}`;
+    return `Possibilities: ${mantissa} * 10^${exponent}`;
 }
 
 // Begin counting elapsed time
@@ -510,7 +509,7 @@ function startTimer() {
         intervalId = setInterval(() => {
             if (!isPaused) { // Update only if not paused
                 elapsedTimeInSeconds++;
-                elapsedTime.textContent = `ELAPSED TIME: ${elapsedTimeInSeconds}`;
+                elapsedTime.textContent = `Elapsed: ${elapsedTimeInSeconds}`;
             }
         }, 1000);
     }
@@ -524,11 +523,11 @@ function stopTimer() {
 
 
 function resetAllText(){
-    elapsedTime.textContent = "ELAPSED TIME: 0";
-    bestDistance.textContent = "BEST DISTANCE: 0";
-    worseDistance.textContent = "WORSE DISTANCE: 0";
-    averageDistance.textContent = "AVERAGE DISTANCE: 0";
-    epoch.textContent = "EPOCH 0";
+    elapsedTime.textContent = "Elapsed: 0";
+    bestDistance.textContent = "Best: 0";
+    worseDistance.textContent = "Worse: 0";
+    averageDistance.textContent = "Average: 0";
+    epoch.textContent = "Epoch: 0";
 }
 
  // Select all range inputs
