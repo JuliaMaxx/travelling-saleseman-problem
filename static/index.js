@@ -7,6 +7,7 @@ const stopBtn = document.getElementById("stopBtn");
 const algorithmSelect = document.getElementById("algorithmSelect");
 const speedRange = document.getElementById("speed");
 const speedCount = document.getElementById("speedCount");
+const options = document.querySelectorAll('select option');
 
 // Info
 const possiblePaths = document.getElementById("possiblePaths");

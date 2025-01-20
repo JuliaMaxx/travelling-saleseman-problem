@@ -28,13 +28,14 @@
             <div id="elapsedTime">ELAPSED TIME: 0</div>
             <hr>
             <form id="algorithmForm">
-                <label for="algorithmSelect">ALGORITHM</label>
-                <select id="algorithmSelect" name="algorithm">
-                    <option value="" disabled selected>Choose algorithm</option>
-                    <option value="greedy">Greedy</option>
-                    <option value="random">Random</option>
-                    <option value="genetic">Genetic</option>
-                </select>
+                <div class="custom-select">
+                    <select id="algorithmSelect" name="algorithm">
+                        <option value="" disabled selected>Algorithm</option>
+                        <option value="greedy">Greedy</option>
+                        <option value="random">Random</option>
+                        <option value="genetic">Genetic</option>
+                    </select>
+                </div>
                 <hr>
                 <div id="randomOptions" style="display: none;">
                     <input type="checkbox" id="averageCheck" />
@@ -60,12 +61,13 @@
                         <input type="range" id="greedyRange" value="20" min="0" max="100" step="1">
                         <span id="greedyCount">20</span>
                         <hr>
-                        <label for="selectionSelect">SELECTION</label>
-                        <select id="selectionSelect" name="selection">
-                            <option value="" disabled selected>Choose selection</option>
-                            <option value="tournament">Tournament</option>
-                            <option value="roulette">Roulette</option>
-                        </select>
+                        <div class="custom-select">
+                            <select id="selectionSelect" name="selection">
+                                <option value="" disabled selected>Selection</option>
+                                <option value="tournament">Tournament</option>
+                                <option value="roulette">Roulette</option>
+                            </select>
+                        </div>
                         <hr>
                         <div id="tournamentSizeInput" style="display: none;">
                             <label for="tournamentSizeRange">TOURNAMENT BATCH</label>
@@ -82,20 +84,22 @@
                             <span id="eliteCount">5</span>
                         </div>
                         <hr>
-                        <label for="crossoverSelect">CHOOSE CROSSOVER</label>
-                        <select id="crossoverSelect" name="crossover">
-                            <option value="" disabled selected>Choose crossover</option>
-                            <option value="ordered">Ordered</option>
-                            <option value="partially matched">Partially matched</option>
-                            <option value="cycle">Cycle</option>
-                        </select>
+                        <div class="custom-select">
+                            <select id="crossoverSelect" name="crossover">
+                                <option value="" disabled selected>Crossover</option>
+                                <option value="ordered">Ordered</option>
+                                <option value="partially matched">Partially matched</option>
+                                <option value="cycle">Cycle</option>
+                            </select>
+                        </div>
                         <hr>
-                        <label for="mutationSelect">CHOOSE MUTATION</label>
-                        <select id="mutationSelect" name="mutation">
-                            <option value="" disabled selected>Choose mutation</option>
-                            <option value="swap">Swap</option>
-                            <option value="inversion">Inversion</option>
-                        </select>
+                        <div class="custom-select">
+                            <select id="mutationSelect" name="mutation">
+                                <option value="" disabled selected>Mutation</option>
+                                <option value="swap">Swap</option>
+                                <option value="inversion">Inversion</option>
+                            </select>
+                        </div>
                         <hr>
                         <label for="mutationRange">MUTATION PROBABILITY</label>
                         <input type="range" id="mutationRange" value="10" min="1" max="100" step="1">
