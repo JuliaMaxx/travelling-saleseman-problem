@@ -63,11 +63,27 @@ button:disabled{
 
 /* NAVIGATION */
 nav {
-    padding: 10px 20px;
+    padding: 10px 20px 50px;
     background-color: rgb(80, 97, 80);
     width: 450px;
     box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.236);
     overflow-y: scroll;
+}
+nav::-webkit-scrollbar {
+    width: 4px; 
+}
+
+nav::-webkit-scrollbar-track {
+    background: rgb(80, 97, 80);
+}
+
+nav::-webkit-scrollbar-thumb {
+    background: rgb(142, 156, 144);
+    border-radius: 5px;
+}
+
+nav::-webkit-scrollbar-thumb:hover {
+    background: #45a049;
 }
 
 
