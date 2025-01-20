@@ -10,11 +10,34 @@ main {
     height: 100vh;
 }
 
+/* TEXT */
+h1 {
+    text-align: center;
+    color: rgb(15, 20, 14);
+    font-weight: 400;
+    font-family: "Noto Sans", cursive;
+    font-size: 35px;
+}
+h2 {
+    margin-top: -40px;
+    padding-top: 0;
+    color: rgb(32, 44, 30);
+    text-align: center;
+    font-family: "Indie Flower", cursive;
+    font-size: 45px;
+}
+p, div, button, input, label, select, option, span {
+    color:rgb(32, 44, 30);
+    font-family: "Noto Sans", cursive;
+    font-weight: 700;
+    font-size: 17px;
+}
+
 
 /* NAVIGATION */
 nav {
+    padding: 0px 20px;
     background-color: rgb(80, 97, 80);
-    height: 100%;
     width: 450px;
     box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.236);
 }
@@ -34,6 +57,6 @@ nav {
 
 #canvas {
     width: 1400px;
-    height: 860px;
+    height: 857px;
     position: relative; 
 }

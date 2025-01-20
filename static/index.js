@@ -509,7 +509,7 @@ function startTimer() {
         intervalId = setInterval(() => {
             if (!isPaused) { // Update only if not paused
                 elapsedTimeInSeconds++;
-                elapsedTime.textContent = `Elapsed Time: ${elapsedTimeInSeconds}`;
+                elapsedTime.textContent = `ELAPSED TIME: ${elapsedTimeInSeconds}`;
             }
         }, 1000);
     }
@@ -523,9 +523,9 @@ function stopTimer() {
 
 
 function resetAllText(){
-    elapsedTime.textContent = "Elapsed Time: 0";
-    bestDistance.textContent = "Best distance: 0";
-    worseDistance.textContent = "Worse distance: 0";
-    averageDistance.textContent = "Average distance: 0";
-    epoch.textContent = "Epoch 0";
+    elapsedTime.textContent = "ELAPSED TIME: 0";
+    bestDistance.textContent = "BEST DISTANCE: 0";
+    worseDistance.textContent = "WORSE DISTANCE: 0";
+    averageDistance.textContent = "AVERAGE DISTANCE: 0";
+    epoch.textContent = "EPOCH 0";
 }
