@@ -529,3 +529,20 @@ function resetAllText(){
     averageDistance.textContent = "AVERAGE DISTANCE: 0";
     epoch.textContent = "EPOCH 0";
 }
+
+ // Select all range inputs
+ const rangeInputs = document.querySelectorAll('input[type="range"]');
+
+ // Function to update the background of a range input
+ function updateRangeBackground(rangeInput) {
+     const value = rangeInput.value;
+     const percentage = ((value - rangeInput.min) / (rangeInput.max - rangeInput.min)) * 100;
+     rangeInput.style.setProperty('--value', `${percentage}%`);
+ }
+
+ // Attach event listeners to all range inputs
+ rangeInputs.forEach(input => {
+     input.addEventListener('input', () => updateRangeBackground(input));
+     // Initialize background on page load
+     updateRangeBackground(input);
+ });

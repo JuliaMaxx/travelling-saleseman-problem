@@ -43,7 +43,7 @@ hr{
 button {
     background-color: rgb(80, 97, 80);
     border: none;
-    color: rgb(180, 199, 183);
+    color: rgb(212, 198, 198);
     font-weight: 500;
     border-radius: 1px;
     padding: 8px 20px;
@@ -63,29 +63,59 @@ button:disabled{
 
 /* NAVIGATION */
 nav {
-    padding: 10px 20px 50px;
+    padding: 10px 35px 50px;
     background-color: rgb(80, 97, 80);
-    width: 450px;
+    width: 400px;
     box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.236);
     overflow-y: scroll;
 }
 nav::-webkit-scrollbar {
     width: 4px; 
 }
-
 nav::-webkit-scrollbar-track {
     background: rgb(80, 97, 80);
 }
 
 nav::-webkit-scrollbar-thumb {
-    background: rgb(142, 156, 144);
+    background: rgb(212, 198, 198);
     border-radius: 5px;
 }
 
 nav::-webkit-scrollbar-thumb:hover {
-    background: #45a049;
+    background:  rgb(69, 160, 73);
 }
 
+/* INPUTS */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    outline: none;
+    transition: background 0.3s ease-in-out;
+    margin-bottom: 10px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 17px; 
+    height: 17px;
+    background: rgb(69, 160, 73);
+    border-radius: 50%;
+    cursor: pointer; 
+    transform: translateY(-40%);
+    z-index: 1;
+    transition: background 0.1s ease-in-out;
+}
+
+/* Track styling */
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 5px;
+    background: linear-gradient(to right,  rgb(69, 160, 73) var(--value, 50%), rgb(212, 198, 198) var(--value, 50%));
+}
 
 /* CANVAS */
 .main-content{
