@@ -22,20 +22,23 @@
             <button id="manual">Manual</button>
             <input type="range" id="pointRange" min="1" max="200" value="10" step="1">
             <span id="pointCount">10</span>
+            <hr>
             <div id="possiblePaths">0</div>
             <div id="elapsedTime">ELAPSED TIME: 0</div>
+            <hr>
             <form id="algorithmForm">
-                <label for="algorithmSelect">CHOOSE ALGORITHM</label>
+                <label for="algorithmSelect">ALGORITHM</label>
                 <select id="algorithmSelect" name="algorithm">
                     <option value="" disabled selected>Choose algorithm</option>
                     <option value="greedy">Greedy</option>
                     <option value="random">Random</option>
                     <option value="genetic">Genetic</option>
                 </select>
+                <hr>
                 <div id="randomOptions" style="display: none;">
                     <input type="checkbox" id="averageCheck" />
                     <label for="averageCheck">CALCULATE AVERAGE</label>
-                
+                    <hr>
                     <div id="averageCountInput" style="display: none;">
                         <label for="averageRange">NUMBER OF SOLUTIONS</label>
                         <input type="range" id="averageRange" value="10" min="1" max="100" step="1">
@@ -47,36 +50,37 @@
                         <div id="bestDistance">BEST: 0</div>
                         <div id="worseDistance">WORST: 0</div>
                         <div id="averageDistance">AVERAGE: 0</div>
+                        <hr>
                         <label for="populationSize">POPULATION SIZE</label>
                         <input type="range" id="populationRange" value="50" min="3" max="200" step="1">
                         <span id="populationCount">50</span>
-                        
+                        <hr>
                         <label for="greedyRatio">GREEDY RATIO</label>
                         <input type="range" id="greedyRange" value="20" min="0" max="100" step="1">
                         <span id="greedyCount">20</span>
-
+                        <hr>
                         <label for="selectionSelect">SELECTION</label>
                         <select id="selectionSelect" name="selection">
                             <option value="" disabled selected>Choose selection</option>
                             <option value="tournament">Tournament</option>
                             <option value="roulette">Roulette</option>
                         </select>
-                        
+                        <hr>
                         <div id="tournamentSizeInput" style="display: none;">
                             <label for="tournamentSizeRange">TOURNAMENT BATCH</label>
                             <input  type="range" id="tournamentSizeRange" value="5" min="3" max="50" step="1">
                             <span id="tournamentSizeCount">5</span>
                         </div>
-                        
+                        <hr>
                         <input type="checkbox" id="eliteCheck" />
                         <label for="eliteCheck">ELITE</label>
-
+                        <hr>
                         <div id="eliteSizeInput" style="display: none;">
                             <label for="eliteSizeRange">NUMBER OF ELITES</label>
                             <input type="range" id="eliteSizeRange" value="5" min="3" max="50" step="1">
                             <span id="eliteCount">5</span>
                         </div>
-
+                        <hr>
                         <label for="crossoverSelect">CHOOSE CROSSOVER</label>
                         <select id="crossoverSelect" name="crossover">
                             <option value="" disabled selected>Choose crossover</option>
@@ -84,31 +88,33 @@
                             <option value="partially matched">Partially matched</option>
                             <option value="cycle">Cycle</option>
                         </select>
-
+                        <hr>
                         <label for="mutationSelect">CHOOSE MUTATION</label>
                         <select id="mutationSelect" name="mutation">
                             <option value="" disabled selected>Choose mutation</option>
                             <option value="swap">Swap</option>
                             <option value="inversion">Inversion</option>
                         </select>
-
+                        <hr>
                         <label for="mutationRange">MUTATION PROBABILITY</label>
                         <input type="range" id="mutationRange" value="10" min="1" max="100" step="1">
                         <span id="mutationCount">10</span>
-
+                        <hr>
                         <label for="epochRange">NUMBER OF EPOCHS</label>
                         <input type="range" id="epochRange" value="10" min="1" max="100" step="1">
                         <span id="epochCount">10</span>
                     </div>
                 </form>
+                <hr>
                 <button id="playBtn">Play</button>
                 <button id="pauseBtn" disabled>Pause</button>
                 <button id="stopBtn" disabled>Stop</button>
                 <div>
+                    <hr>
                     <label for="speed">VISUALIZATION SPEED</label>
                     <input type="range" id="speed" min="0" max="100" step="1" value="1" />
                     <span id="speedCount">1</span>
-            </div>
+                </div>
         </nav>
         <div id="mainContent" class="main-content">
             <div id="canvas"></div>
