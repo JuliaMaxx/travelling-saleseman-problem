@@ -177,6 +177,12 @@ select:disabled {
     box-shadow: none;
 }
 
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+  }
+
 
 /* CANVAS */
 .main-content{
