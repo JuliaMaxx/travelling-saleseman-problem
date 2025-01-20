@@ -33,6 +33,27 @@ p, div, button, input, label, select, option, span {
     font-size: 17px;
 }
 
+/* BUTTON */
+button {
+    background-color: rgb(80, 97, 80);
+    border: none;
+    color: rgb(180, 199, 183);
+    font-weight: 500;
+    border-radius: 1px;
+    padding: 8px 20px;
+    box-shadow: 1px 0px 2px rgba(0, 0, 0, 0.351);
+    transition: all 0.1s ease-in-out;
+}
+button:hover {
+    /* box-shadow: inset 2px 1px 2px rgba(0, 0, 0, 0.351); */
+    transform: scale(0.9);
+}
+button:disabled{
+    background-color: #5d5d5d;
+    color: #909090;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
 /* NAVIGATION */
 nav {
