@@ -75,7 +75,8 @@ def stop_algorithm(data):
         
 @socketio.on('update_delay')
 def update_delay(data):
-        config.VISUALIZATION_DELAY = data['delay'] 
+        config.VISUALIZATION_DELAY = float(data['delay']) + 0.001
+        print(config.VISUALIZATION_DELAY)
 
 if __name__ == '__main__':
     app.run(debug=True)

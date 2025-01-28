@@ -113,7 +113,7 @@ pointRange.addEventListener("input", () => {
 
 // Update the speed of the algorithm
 speedRange.addEventListener("input", () => {
-    const delay = parseInt(speedRange.value)/100;
+    const delay = speedRange.value/100;
     socket.emit('update_delay', {delay: delay});
 });
 
@@ -261,9 +261,9 @@ stopBtn.addEventListener("click", () => {
     // Stop the algorithm
     stopTimer(intervalId);
     socket.emit('stop_algorithm', {});
+    lineGroup.selectAll('path').remove();
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
-    lineGroup.selectAll('path').remove();
     playBtn.disabled = false;
     // Reset the button text to "Play"
     playBtn.textContent = 'Play';
