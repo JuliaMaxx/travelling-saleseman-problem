@@ -437,6 +437,7 @@ function updateLines(solution, points, type) {
     lineGroup.append('path')
        .data([solutionPoints])
        .attr('d', line)
+       .attr('class', 'calc')
        .attr('fill', 'none')
        .attr('stroke', lineColor)
        .attr('stroke-width', 2.5);
@@ -546,3 +547,25 @@ function resetAllText(){
      // Initialize background on page load
      updateRangeBackground(input);
  });
+
+
+// Function to generate a random non-green color (in HSL)
+function getRandomHSL() {
+    let h;
+  
+    // Loop to generate a hue outside the green range (80° - 160°)
+    do {
+      h = Math.floor(Math.random() * 360);
+    } while (h >= 80 && h <= 160);
+  
+    const s = Math.floor(Math.random() * 101);
+    const l = Math.floor(Math.random() * 15) + 2;
+    return `hsl(${h}, ${s}%, ${l}%)`;
+  }
+  
+
+// Apply a random color to each div
+const paths = document.querySelectorAll('path:not(.calc)');
+paths.forEach(path => {
+path.style.fill = getRandomHSL();
+});

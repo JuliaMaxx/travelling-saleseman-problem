@@ -197,14 +197,21 @@ input[type="checkbox"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url(world.svg);
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+    position: relative;
+    width: 1400px;
+    height: 857px;
 }
 
 #canvas {
     width: 1400px;
     height: 857px;
     position: relative; 
+}
+
+/* WORD MAP */
+svg {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    height: 100%;
 }
