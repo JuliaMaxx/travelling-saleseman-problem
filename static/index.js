@@ -8,6 +8,7 @@ const algorithmSelect = document.getElementById("algorithmSelect");
 const speedRange = document.getElementById("speed");
 const speedCount = document.getElementById("speedCount");
 const options = document.querySelectorAll('select option');
+const colorRange = document.getElementById("color");
 
 // Info
 const possiblePaths = document.getElementById("possiblePaths");
@@ -556,16 +557,21 @@ function getRandomHSL() {
     // Loop to generate a hue outside the green range (80° - 160°)
     do {
       h = Math.floor(Math.random() * 360);
-    } while (h >= 80 && h <= 160);
+    } while (h >= 70 && h <= 170);
   
     const s = Math.floor(Math.random() * 101);
-    const l = Math.floor(Math.random() * 15) + 2;
+    const l = Math.floor(Math.random() * 20) + 2;
     return `hsl(${h}, ${s}%, ${l}%)`;
   }
   
-
-// Apply a random color to each div
 const paths = document.querySelectorAll('path:not(.calc)');
 paths.forEach(path => {
 path.style.fill = getRandomHSL();
+});
+
+colorRange.addEventListener("input", () => {
+    const paths = document.querySelectorAll('path:not(.calc)');
+    paths.forEach(path => {
+    path.style.fill = getRandomHSL();
+    });
 });
