@@ -460,8 +460,8 @@ function updateLines(solution, points, type) {
 const validRange = {
     xMin: 50,
     xMax: 1350,
-    yMin: 30,
-    yMax: 820,
+    yMin: 7,
+    yMax: 830,
 };
 
 // Function to handle canvas clicks

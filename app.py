@@ -20,7 +20,7 @@ def handle_points(data):
     manual = data['manual']
     num_points = data['numPoints']
     if not manual:
-        config.POINTS = [{'x': random.randint(50, 1350), 'y': random.randint(30, 820)} for _ in range(num_points)]
+        config.POINTS = [{'x': random.randint(50, 1350), 'y': random.randint(8, 830)} for _ in range(num_points)]
         emit('receive_points', {'points': config.POINTS})
     else:
         config.POINTS = num_points
