@@ -9,6 +9,7 @@ const speedRange = document.getElementById("speed");
 const speedCount = document.getElementById("speedCount");
 const options = document.querySelectorAll('select option');
 const colorRange = document.getElementById("color");
+const paths = document.querySelectorAll('path:not(.calc)');
 
 // Info
 const possiblePaths = document.getElementById("possiblePaths");
@@ -60,6 +61,10 @@ const MAX_POINTS = 200;
 let algorithmSet = false;
 let elapsedTimeInSeconds = 0;
 let intervalId = null; 
+
+paths.forEach(path => {
+path.style.fill = getRandomHSL();
+});
 
 // Clear everything on page load
 window.onload = function() {
@@ -330,6 +335,13 @@ speedRange.addEventListener("input", () => {
     speedCount.textContent = speedRange.value;
 });
 
+colorRange.addEventListener("input", () => {
+    const paths = document.querySelectorAll('path:not(.calc)');
+    paths.forEach(path => {
+    path.style.fill = getRandomHSL();
+    });
+});
+
 
 // Handle the points data from the backend
 socket.on('receive_points', function(data) {
@@ -559,19 +571,7 @@ function getRandomHSL() {
       h = Math.floor(Math.random() * 360);
     } while (h >= 70 && h <= 170);
   
-    const s = Math.floor(Math.random() * 101);
+    const s = Math.floor(Math.random() * 31) + 70;
     const l = Math.floor(Math.random() * 20) + 2;
     return `hsl(${h}, ${s}%, ${l}%)`;
-  }
-  
-const paths = document.querySelectorAll('path:not(.calc)');
-paths.forEach(path => {
-path.style.fill = getRandomHSL();
-});
-
-colorRange.addEventListener("input", () => {
-    const paths = document.querySelectorAll('path:not(.calc)');
-    paths.forEach(path => {
-    path.style.fill = getRandomHSL();
-    });
-});
+}
