@@ -76,6 +76,7 @@ window.onload = function() {
     algorithmSelect.disabled = false;
     pointRange.disabled = false;
     isPaused = false;
+    canvas.style.cursor = "default"
     resetAllText();
 };
 
@@ -91,6 +92,7 @@ manual.addEventListener("click", () => {
         playBtn.disabled = true;
         pauseBtn.disabled = true;
         stopBtn.disabled = true;
+        canvas.style.cursor = "pointer"
     }
     else {
         if (points.length < 1){
@@ -98,13 +100,16 @@ manual.addEventListener("click", () => {
             socket.emit('get_points', { numPoints: numPoints, manual: false });
             isSelecting = false;
         }
+        else{
+            socket.emit('get_points', { numPoints: points, manual: true });
+        }
+        canvas.style.cursor = "default"
         algorithmSelect.disabled = false;
         pointRange.disabled = false;
         playBtn.innerText = "Play";
         playBtn.disabled = algorithmSet? false: true;
         isSelecting = false;
         manual.innerText = "Manual";
-        socket.emit('get_points', { numPoints: points, manual: true });
     }
 });
 
@@ -137,7 +142,6 @@ algorithmSelect.addEventListener("change", () => {
         }
         // hide genetic algorithm options
         geneticOptions.style.display = "none";
-        // distance.style.display = "block";
         distance.textContent = `Distance: 0`
         averageCheck.checked = false;
     }
@@ -146,11 +150,9 @@ algorithmSelect.addEventListener("change", () => {
         
         // hide random algorithm options
         randomOptions.style.display = "none";
-        // distance.style.display = "none";
     } 
     else {
         distance.textContent = `Distance: 0`
-        // distance.style.display = "block";
         randomOptions.style.display = "none";
         geneticOptions.style.display = "none";
     }
@@ -561,6 +563,7 @@ function resetAllText(){
     worseDistance.textContent = "Worse: 0";
     averageDistance.textContent = "Average: 0";
     epoch.textContent = "Epoch: 0";
+    distance.textContent = "Distance: 0"
 }
 
  // Select all range inputs
