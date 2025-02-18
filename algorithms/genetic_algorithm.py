@@ -1,125 +1,13 @@
-import math
 import time
 import random
 import bisect
 import config
-
-class StopAlgorithmException(Exception):
-    pass
-
-# Calculate distance between two points
-def distance_between(x1, x2, y1, y2):
-    return round(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2), 3)
-
-# Calculate fitness of a given solution
-def fitness(solution):
-    total_distance = 0
-    if len(solution) > 1:
-        for i in range(len(solution) - 1):
-            # Pause / Resume / Stop
-            if config.stop_event.is_set():
-                raise StopAlgorithmException()
-            config.pause_event.wait()
-            
-            # Calculate INDEXES
-            current_index = solution[i]
-            next_index = solution[i + 1]
-            
-            # Calculate Distance
-            distance = distance_between(
-                config.POINTS[current_index]['x'], config.POINTS[next_index]['x'],
-                config.POINTS[current_index]['y'], config.POINTS[next_index]['y']
-            )
-            total_distance += distance
-    return round(total_distance, 3)
-
-# Greedy algorithm to find a solution starting from a specific point
-def greedy_solution(starting_point, socketio, additional):
-    remaining_indexes = list(range(len(config.POINTS)))
-    solution = [starting_point]
-    
-    while len(remaining_indexes) > 1:
-        remaining_indexes.remove(starting_point)
-        shortest_distance = float('inf')
-        next_city = -1
-        
-        for i in remaining_indexes:
-            # Pause / Resume / Stop
-            if config.stop_event.is_set():
-                if additional:
-                    raise StopAlgorithmException()
-                return
-            config.pause_event.wait()
-            
-            distance = distance_between(
-                config.POINTS[i]['x'], config.POINTS[starting_point]['x'],
-                config.POINTS[i]['y'], config.POINTS[starting_point]['y']
-            )
-            if distance < shortest_distance:
-                shortest_distance = distance
-                next_city = i
-            socketio.emit('update_distance', {'distance': distance})    
-        
-        solution.append(next_city)
-        starting_point = next_city
-        
-        time.sleep(config.VISUALIZATION_DELAY)
-        # Pause / Resume / Stop
-        if config.stop_event.is_set():
-            if additional:
-                    raise StopAlgorithmException()
-            return
-        config.pause_event.wait()
-        
-        # Emit the current state of the solution to the frontend
-        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
-        # Sleep for a short amount of time to visualize the progress
-        time.sleep(config.VISUALIZATION_DELAY)  
-        
-    solution.append(solution[0])
-    if not config.stop_event.is_set():
-        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
-    distance = fitness(solution)
-    socketio.emit('update_distance', {'distance': distance})    
-    if not additional:
-        socketio.emit('algorithm_finished', {})   
-    return solution
-
-# Random solution
-def random_solution(socketio):
-    solution = list(range(len(config.POINTS)))
-    random.shuffle(solution)
-    # Wait if paused
-    config.pause_event.wait()
-    # Ensure the solution returns to the starting city
-    solution.append(solution[0])
-        
-    time.sleep(config.VISUALIZATION_DELAY)
-    if not config.stop_event.is_set():
-            socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
-    distance = fitness(solution)
-    socketio.emit('update_distance', {'distance': distance})  
-    return solution
-
-# Average of random solutions
-def average_of_random(amount, socketio):
-    total = 0
-    for _ in range(amount):
-        # Pause / Resume / Stop
-        if config.stop_event.is_set():
-            return
-        config.pause_event.wait()
-        
-        time.sleep(config.VISUALIZATION_DELAY)
-        solution = random_solution(socketio)   
-        total += fitness(solution)         
-    socketio.emit('algorithm_finished', {})
-    average = round(total / amount, 3)
-    socketio.emit('update_average_distance', {'distance': average})     
-    return average
+from algorithms.algorithms import StopAlgorithmException, fitness
+from algorithms.random_algorithm import random_solution
+from algorithms.greedy_algorithm import greedy_solution
 
 # Genetic algorithm
-def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, socketio):
+def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, socketio):
     try:
         n = 1
         population = initial_population(population_size, greedy_ratio, socketio)
@@ -238,7 +126,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
         return
 
 
-# Genetic algorithm functions
+# Initial population creation
 def initial_population(size, greedy_ratio, socketio):
     population = []
     additional = True
@@ -267,6 +155,8 @@ def initial_population(size, greedy_ratio, socketio):
     random.shuffle(population)
     return population
 
+
+# Information about an epoch
 def population_info(population, socketio, n):
     size = len(population)
     
@@ -278,7 +168,7 @@ def population_info(population, socketio, n):
 
     # Loop over the population
     for solution in population:
-        # Pause / Resume / Stop event handling (handled once per iteration)
+        # Pause / Resume / Stop 
         if config.stop_event.is_set():
             raise StopAlgorithmException()
         config.pause_event.wait()
@@ -300,7 +190,8 @@ def population_info(population, socketio, n):
     # Return the best solution found
     return best_solution
 
-    
+
+# Selections
 def tournament(population, tournament_size):
     # Pause / Resume / Stop
     if config.stop_event.is_set():
@@ -385,6 +276,8 @@ def roulette_selection(population):
     index = bisect.bisect_left(cumulative_distances, rand)
     return population[index]
 
+
+# Crossovers
 def ordered_crossover(parent1,  parent2):
     # Remove last city since it's the same as the first
     parent1 = parent1[:-1]
@@ -532,6 +425,8 @@ def cycle_crossover(parent1, parent2):
 
     return offspring
 
+
+# Mutation
 def mutation_swap(mutation_probability, child):
     solution = child.copy()
     if random.random() <= mutation_probability:
@@ -550,8 +445,6 @@ def mutation_swap(mutation_probability, child):
         solution[first_city_index] = second_city
         solution[second_city_index] = first_city
     return solution
-
-import random
 
 def mutation_inversion(mutation_probability, child):
     solution = child.copy()
@@ -573,6 +466,8 @@ def mutation_inversion(mutation_probability, child):
         solution[first_index:last_index] = solution[first_index:last_index][::-1]
     return solution
 
+
+# Parents selection
 def select_parents(population, selection, tournament_size):
     # Pause / Resume / Stop
     if config.stop_event.is_set():

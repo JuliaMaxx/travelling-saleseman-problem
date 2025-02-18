@@ -1,9 +1,11 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
 import random
-from algorithms import greedy_solution, random_solution, average_of_random, genetic
 import config
 import threading
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
+from algorithms.greedy_algorithm import greedy_solution
+from algorithms.random_algorithm import random_solution, average_of_random
+from algorithms.genetic_algorithm import genetic_solution
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -45,7 +47,7 @@ def start_algorithm(data):
             threading.Thread(target=average_of_random, args=(average_num, socketio), daemon=True).start()
     # Genetic        
     elif algorithm == "genetic":
-        genetic(
+        genetic_solution(
             data['populationSize'],
             data['greedyRatio'],
             data['crossover'],
@@ -62,17 +64,18 @@ def start_algorithm(data):
 def pause_algorithm(data):
     config.pause_event.clear() 
    
-# Event to pause the algorithm 
+# Event to resume the algorithm 
 @socketio.on('resume_algorithm')
 def resume_algorithm(data):
     config.pause_event.set()    
 
-# Event to pause the algorithm 
+# Event to stop the algorithm 
 @socketio.on('stop_algorithm')
 def stop_algorithm(data):
     config.stop_event.set()
     config.pause_event.set()     
         
+# Event to update delay
 @socketio.on('update_delay')
 def update_delay(data):
         config.VISUALIZATION_DELAY = float(data['delay']) + 0.001
