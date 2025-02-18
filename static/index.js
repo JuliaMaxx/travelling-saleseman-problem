@@ -18,6 +18,7 @@ const worseDistance = document.getElementById("worseDistance");
 const averageDistance = document.getElementById("averageDistance");
 const epoch = document.getElementById("epoch");
 const elapsedTime = document.getElementById("elapsedTime");
+const distance = document.getElementById("distance");
 
 // Drawing points
 const pointRange = document.getElementById("pointRange");
@@ -136,14 +137,20 @@ algorithmSelect.addEventListener("change", () => {
         }
         // hide genetic algorithm options
         geneticOptions.style.display = "none";
+        // distance.style.display = "block";
+        distance.textContent = `Distance: 0`
+        averageCheck.checked = false;
     }
     else if (algorithmSelect.value === "genetic"){
         geneticOptions.style.display = "block";
         
         // hide random algorithm options
         randomOptions.style.display = "none";
+        // distance.style.display = "none";
     } 
     else {
+        distance.textContent = `Distance: 0`
+        // distance.style.display = "block";
         randomOptions.style.display = "none";
         geneticOptions.style.display = "none";
     }
@@ -151,8 +158,10 @@ algorithmSelect.addEventListener("change", () => {
 
 averageCheck.addEventListener("change", () => {
     if (averageCheck.checked) {
+        distance.textContent = `Average Distance: 0`
         averageCountInput.style.display = "block";
     } else {
+        distance.textContent = `Distance: 0`
         averageCountInput.style.display = "none";
     }
 });
@@ -355,6 +364,16 @@ socket.on('update_info', function(data) {
     worseDistance.textContent = `Worse distance: ${data['worse']}`
     averageDistance.textContent = `Average distance: ${data['average']}`
     epoch.textContent = `Epoch ${data['epoch']}`
+});
+
+// Display distance in genetic and random solutions
+socket.on('update_distance', function(data) {
+    distance.textContent = `Distance: ${data['distance']}`
+});
+
+// Display distance in genetic and random solutions
+socket.on('update_average_distance', function(data) {
+    distance.textContent = `Average Distance: ${data['distance']}`
 });
 
 // Handle backend sending updates on algorithm progress

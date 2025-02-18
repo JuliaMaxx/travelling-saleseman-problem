@@ -58,6 +58,7 @@ def greedy_solution(starting_point, socketio, additional):
             if distance < shortest_distance:
                 shortest_distance = distance
                 next_city = i
+            socketio.emit('update_distance', {'distance': distance})    
         
         solution.append(next_city)
         starting_point = next_city
@@ -78,27 +79,31 @@ def greedy_solution(starting_point, socketio, additional):
     solution.append(solution[0])
     if not config.stop_event.is_set():
         socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
-    print(fitness(solution))
+    distance = fitness(solution)
+    socketio.emit('update_distance', {'distance': distance})    
     if not additional:
         socketio.emit('algorithm_finished', {})   
     return solution
 
 # Random solution
 def random_solution(socketio):
-   solution = list(range(len(config.POINTS)))
-   random.shuffle(solution)
-   # Wait if paused
-   config.pause_event.wait()
-   # Ensure the solution returns to the starting city
-   solution.append(solution[0])
-    
-   time.sleep(config.VISUALIZATION_DELAY)
-   if not config.stop_event.is_set():
-        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
-   return solution
+    solution = list(range(len(config.POINTS)))
+    random.shuffle(solution)
+    # Wait if paused
+    config.pause_event.wait()
+    # Ensure the solution returns to the starting city
+    solution.append(solution[0])
+        
+    time.sleep(config.VISUALIZATION_DELAY)
+    if not config.stop_event.is_set():
+            socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
+    distance = fitness(solution)
+    socketio.emit('update_distance', {'distance': distance})  
+    return solution
 
 # Average of random solutions
 def average_of_random(amount, socketio):
+    total = 0
     for _ in range(amount):
         # Pause / Resume / Stop
         if config.stop_event.is_set():
@@ -107,16 +112,17 @@ def average_of_random(amount, socketio):
         
         time.sleep(config.VISUALIZATION_DELAY)
         solution = random_solution(socketio)   
-    socketio.emit('algorithm_finished', {})   
-    return solution 
+        total += fitness(solution)         
+    socketio.emit('algorithm_finished', {})
+    average = round(total / amount, 3)
+    socketio.emit('update_average_distance', {'distance': average})     
+    return average
 
 # Genetic algorithm
 def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation, mutation_probability, selection, tournament_size, elitism, elite_size, socketio):
     try:
         n = 1
         population = initial_population(population_size, greedy_ratio, socketio)
-        
-        print(f"Epoch {n}")
         population_info(population, socketio, n)
         
         while n < number_of_epochs:
@@ -146,6 +152,8 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': parent1, 'points': config.POINTS, 'type':'parent'})
+                socketio.emit('update_distance', {'distance': fitness(parent1)})  
+                
                     
                 time.sleep(config.VISUALIZATION_DELAY)
                 
@@ -156,6 +164,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': parent2, 'points': config.POINTS, 'type':'parent'})
+                socketio.emit('update_distance', {'distance': fitness(parent2)})  
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
@@ -178,8 +187,11 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                     return
                 config.pause_event.wait()
                 
+                
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': child, 'points': config.POINTS, 'type':'crossover'})
+                socketio.emit('update_distance', {'distance': fitness(child)})  
+                
                     
                 # Apply chosen mutation
                 match mutation:
@@ -197,6 +209,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS, 'type':'mutation'})
+                socketio.emit('update_distance', {'distance': fitness(mutated_child)})  
                     
                 # Add to the new population
                 if tuple(mutated_child) not in existing_individuals:
@@ -205,8 +218,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
             # Update for the next epoch
             population = new_population
             n += 1
-            
-            print(f"\nEpoch {n}")
+        
             best = population_info(population, socketio, n)
             
             time.sleep(config.VISUALIZATION_DELAY)
@@ -218,6 +230,7 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
             
             if not config.stop_event.is_set():
                 socketio.emit('update_lines', {'solution': best, 'points': config.POINTS, 'type':'best'})
+            socketio.emit('update_distance', {'distance': fitness(best)})  
             
         socketio.emit('algorithm_finished', {})       
         return population
@@ -227,8 +240,6 @@ def genetic(population_size, greedy_ratio, crossover, number_of_epochs, mutation
 
 # Genetic algorithm functions
 def initial_population(size, greedy_ratio, socketio):
-    print(size)
-    print(greedy_ratio)
     population = []
     additional = True
     
@@ -285,13 +296,6 @@ def population_info(population, socketio, n):
     # Calculate and round the average distance
     average_distance = total_distance / size if size else 0
     average_distance = round(average_distance, 3)
-
-    # Print results (you could also consider logging instead of printing)
-    print(f"Population size: {size}")
-    print(f"Best distance: {best_distance}")
-    print(f"Worst distance: {worst_distance}")
-    print(f"Average distance: {average_distance}")
-    
     socketio.emit('update_info', {'best': best_distance, 'worse': worst_distance, 'average': average_distance, 'epoch': n})
     # Return the best solution found
     return best_solution
