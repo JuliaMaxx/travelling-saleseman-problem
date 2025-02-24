@@ -27,7 +27,7 @@ def greedy_solution(starting_point, socketio, additional):
             if distance < shortest_distance:
                 shortest_distance = distance
                 next_city = i
-            socketio.emit('update_distance', {'distance': distance})    
+            socketio.emit('update_distance', {'distance': round(distance * 10, 3)})    
         
         solution.append(next_city)
         starting_point = next_city
@@ -49,7 +49,7 @@ def greedy_solution(starting_point, socketio, additional):
     if not config.stop_event.is_set():
         socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS, 'type': 'best'})
     distance = fitness(solution)
-    socketio.emit('update_distance', {'distance': distance})    
+    socketio.emit('update_distance', {'distance': round(distance * 10, 3)})    
     if not additional:
         socketio.emit('algorithm_finished', {})   
     return solution

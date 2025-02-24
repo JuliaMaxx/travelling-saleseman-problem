@@ -40,7 +40,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': parent1, 'points': config.POINTS, 'type':'parent'})
-                socketio.emit('update_distance', {'distance': fitness(parent1)})  
+                socketio.emit('update_distance', {'distance': round(fitness(parent1) * 10, 3)})  
                 
                     
                 time.sleep(config.VISUALIZATION_DELAY)
@@ -52,7 +52,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': parent2, 'points': config.POINTS, 'type':'parent'})
-                socketio.emit('update_distance', {'distance': fitness(parent2)})  
+                socketio.emit('update_distance', {'distance': round(fitness(parent2) * 10, 3)})  
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
@@ -78,7 +78,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': child, 'points': config.POINTS, 'type':'crossover'})
-                socketio.emit('update_distance', {'distance': fitness(child)})  
+                socketio.emit('update_distance', {'distance': round(fitness(child) * 10, 3)})  
                 
                     
                 # Apply chosen mutation
@@ -97,7 +97,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS, 'type':'mutation'})
-                socketio.emit('update_distance', {'distance': fitness(mutated_child)})  
+                socketio.emit('update_distance', {'distance': round(fitness(mutated_child) * 10, 3)})  
                     
                 # Add to the new population
                 if tuple(mutated_child) not in existing_individuals:
@@ -118,7 +118,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
             
             if not config.stop_event.is_set():
                 socketio.emit('update_lines', {'solution': best, 'points': config.POINTS, 'type':'best'})
-            socketio.emit('update_distance', {'distance': fitness(best)})  
+            socketio.emit('update_distance', {'distance': round(fitness(best) * 10, 3)})  
             
         socketio.emit('algorithm_finished', {})       
         return population
@@ -186,7 +186,7 @@ def population_info(population, socketio, n):
     # Calculate and round the average distance
     average_distance = total_distance / size if size else 0
     average_distance = round(average_distance, 3)
-    socketio.emit('update_info', {'best': best_distance, 'worse': worst_distance, 'average': average_distance, 'epoch': n})
+    socketio.emit('update_info', {'best': round(best_distance * 10, 3), 'worse': round(worst_distance * 10, 3), 'average': round(average_distance * 10, 3), 'epoch': n})
     # Return the best solution found
     return best_solution
 

@@ -86,16 +86,17 @@ function manualSelection() {
     }
     else {
         if (points.length < 1){
-            toggleButtonState(pointRange, false);
             socket.emit('get_points', { numPoints: numPoints, manual: false });
             isSelecting = false;
         }
         else{
             socket.emit('get_points', { numPoints: points, manual: true });
         }
-        toggleControls(algorithmSet? false: true, false, false);
         toggleManualButtonText(true);
         toggleCursor(false);
+        play = algorithmSet? false: true;
+        toggleControls(play, true, true);
+        [pointRange, algorithmSelect].forEach(el => toggleButtonState(el, false));
         isSelecting = false;
     }
 }

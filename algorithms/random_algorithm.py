@@ -16,7 +16,7 @@ def random_solution(socketio):
     if not config.stop_event.is_set():
             socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
     distance = fitness(solution)
-    socketio.emit('update_distance', {'distance': distance})  
+    socketio.emit('update_distance', {'distance': round(distance * 10, 3)})  
     return solution
 
 # Average of random solutions
@@ -33,5 +33,5 @@ def average_of_random(amount, socketio):
         total += fitness(solution)         
     socketio.emit('algorithm_finished', {})
     average = round(total / amount, 3)
-    socketio.emit('update_average_distance', {'distance': average})     
+    socketio.emit('update_average_distance', {'distance': round(average * 10, 3)})     
     return average
