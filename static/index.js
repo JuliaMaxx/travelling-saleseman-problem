@@ -10,6 +10,7 @@ const speedCount = document.getElementById("speedCount");
 const options = document.querySelectorAll('select option');
 const colorRange = document.getElementById("color");
 const paths = document.querySelectorAll('path:not(.calc)');
+const rangeInputs = document.querySelectorAll('input[type="range"]');
 
 // Info
 const possiblePaths = document.getElementById("possiblePaths");
@@ -69,226 +70,81 @@ path.style.fill = getRandomHSL();
 
 // Clear everything on page load
 window.onload = function() {
-    lineGroup.selectAll('path').remove();
-    socket.emit('get_points', { numPoints: numPoints, manual: false });
-    socket.emit('stop_algorithm', {});
-    playBtn.disabled = true;
-    algorithmSelect.disabled = false;
-    pointRange.disabled = false;
-    isPaused = false;
-    canvas.style.cursor = "default"
-    resetAllText();
+    resetToInitialState();
 };
 
-manual.addEventListener("click", () => {
+
+function manualSelection() {
     if (!isSelecting){
         points = []
-        manual.innerText = "Finish";
+        toggleManualButtonText(false);
+        removeAllCirles();
+        removeAllPaths();
+        [pointRange, algorithmSelect, playBtn].forEach(el => toggleButtonState(el, true));
+        toggleCursor(true);
         isSelecting = true;
-        pointRange.disabled = true;
-        circleGroup.selectAll('circle').remove();
-        lineGroup.selectAll('path').remove();
-        algorithmSelect.disabled = true;
-        playBtn.disabled = true;
-        pauseBtn.disabled = true;
-        stopBtn.disabled = true;
-        canvas.style.cursor = "pointer"
     }
     else {
         if (points.length < 1){
-            pointRange.disabled = false;
+            toggleButtonState(pointRange, false);
             socket.emit('get_points', { numPoints: numPoints, manual: false });
             isSelecting = false;
         }
         else{
             socket.emit('get_points', { numPoints: points, manual: true });
         }
-        canvas.style.cursor = "default"
-        algorithmSelect.disabled = false;
-        pointRange.disabled = false;
-        playBtn.innerText = "Play";
-        playBtn.disabled = algorithmSet? false: true;
+        toggleControls(algorithmSet? false: true, false, false);
+        toggleManualButtonText(true);
+        toggleCursor(false);
         isSelecting = false;
-        manual.innerText = "Manual";
     }
-});
+}
 
+function toggleCursor(isSelecting){
+    canvas.style.cursor = isSelecting? "pointer": "default" ;
+}
+
+function removeAllCirles(){
+    circleGroup.selectAll('circle').remove();
+}
+
+function removeAllPaths(){
+    lineGroup.selectAll('path').remove();
+}
+
+function toggleManualButtonText(isSelecting){
+    manual.innerText = isSelecting? "Manual": "Finish";
+}
+
+
+manual.addEventListener("click", manualSelection);
 
 // Update the displayed number of points based on the range slider
-pointRange.addEventListener("input", () => {
-    pointCount.textContent = pointRange.value;
-    numPoints = parseInt(pointRange.value);
-
-    // Send request to backend for new points
-    socket.emit('get_points', { numPoints: numPoints, manual: false });
-});
+pointRange.addEventListener("input", pointRangeInput);
 
 // Update the speed of the algorithm
-speedRange.addEventListener("input", () => {
-    const delay = speedRange.value/100;
-    socket.emit('update_delay', {delay: delay});
-});
+speedRange.addEventListener("input", speedRangeInput);
 
 // Show or hide options based on the selected options
-algorithmSelect.addEventListener("change", () => {
-    algorithmSet = true;
-    playBtn.disabled = false;
-    resetAllText();
-    if (algorithmSelect.value === "random") {
-        randomOptions.style.display = "block";
-        if (!averageCheck.checked){
-            pauseBtn.disabled = true;
-            stopBtn.disabled = true;
-        }
-        // hide genetic algorithm options
-        geneticOptions.style.display = "none";
-        distance.textContent = `Distance: 0`
-        averageCheck.checked = false;
-    }
-    else if (algorithmSelect.value === "genetic"){
-        geneticOptions.style.display = "block";
-        
-        // hide random algorithm options
-        randomOptions.style.display = "none";
-    } 
-    else {
-        distance.textContent = `Distance: 0`
-        randomOptions.style.display = "none";
-        geneticOptions.style.display = "none";
-    }
-});
+algorithmSelect.addEventListener("change", algorithmSelectChange);
 
-averageCheck.addEventListener("change", () => {
-    if (averageCheck.checked) {
-        distance.textContent = `Average Distance: 0`
-        averageCountInput.style.display = "block";
-    } else {
-        distance.textContent = `Distance: 0`
-        averageCountInput.style.display = "none";
-    }
-});
+averageCheck.addEventListener("change", averageCheckChange);
 
-selectionSelect.addEventListener("change", () => {
-    if (selectionSelect.value === "tournament"){
-        tournamentSizeInput.style.display = "block";
-    }
-    else{
-        tournamentSizeInput.style.display = "none";
-    }
-});
+selectionSelect.addEventListener("change", selectionSelectChange);
 
-eliteCheck.addEventListener("change", () => {
-    if (eliteCheck.checked) {
-        eliteSizeInput.style.display = "block";
-    } else {
-        eliteSizeInput.style.display = "none";
-    }
-});
-
+eliteCheck.addEventListener("change",eliteCheckChange);
 
 // Trigger the selected algorithm on button click
 playBtn.addEventListener('click', () => {
-    if (algorithmSelect.value != "random" || averageCheck.checked){
-        pointRange.disabled = true;
-        manual.disabled = true;
-        algorithmSelect.disabled = true;
-        startTimer();
-    }
-    if (!isPaused) {
-        lineGroup.selectAll('path').remove();
-        const selectedAlgorithm = algorithmSelect.value;
-        let averageNum = 1;
-        let populationSize = 50;
-        let greedyRatio = 0.2;
-        let selection = 1;
-        let tournamentSize = 5;
-        let elite = true;
-        let eliteSize = 5;
-        let crossover = 1;
-        let mutation = 2;
-        let mutationProbability = 0.1;
-        let epochNum = 10;
-        if (selectedAlgorithm === "random" && averageCheck.checked){
-            averageNum = parseInt(averageRange.value);
-        }
-        else if (selectedAlgorithm === "genetic"){
-            populationSize = parseInt(populationRange.value);
-            greedyRatio = parseInt(greedyRange.value)/100;
-            selection = selectionSelect.value == "tournament"? 1 : 2;
-            tournamentSize = parseInt(tournamentSizeRange.value);
-            elite = eliteCheck.value.checked? true: false;
-            eliteSize = parseInt(eliteSizeRange.value);
-            crossover = crossoverSelect.value == "ordered"? 1:
-                        crossoverSelect.value == "partially matched"? 2: 3;
-            mutation = mutationSelect.value == "swap"? 1: 2;
-            mutationProbability = parseInt(mutationRange.value)/100;
-            epochNum = parseInt(epochRange.value);
-        }
-
-        socket.emit('start_algorithm', { 
-            algorithm: selectedAlgorithm,
-            numPoints: numPoints,
-            averageNum: averageNum,
-            populationSize: populationSize,
-            greedyRatio: greedyRatio,
-            selection: selection,
-            tournamentSize: tournamentSize,
-            elite: elite,
-            eliteSize: eliteSize,
-            crossover: crossover,
-            mutation: mutation,
-            mutationProbability: mutationProbability,
-            epochNum: epochNum
-        });
-
-        if (algorithmSelect.value === 'random' && !averageCheck.checked){
-            pauseBtn.disabled = true;
-            stopBtn.disabled = true;
-        }
-        else
-        {
-            // Start the algorithm
-            playBtn.disabled = true;
-            pauseBtn.disabled = false;
-            stopBtn.disabled = false;
-        }
-    } else {
-        // Resume the algorithm when paused
-        socket.emit('resume_algorithm', {});
-        startTimer();
-        playBtn.disabled = true;
-        pauseBtn.disabled = false;
-        stopBtn.disabled = false;
-        isPaused = false;
-    }
+    playAlgorithm();
 });
 
 pauseBtn.addEventListener("click", () => {
-    // Pause the algorithm
-    socket.emit('pause_algorithm', {});
-    pauseBtn.disabled = true;
-    // Change to Resume
-    playBtn.textContent = 'Resume';
-    playBtn.disabled = false;  
-    stopBtn.disabled = false;
-    isPaused = true;
+    pauseAlgorithm();
 });
 
 stopBtn.addEventListener("click", () => {
-    // Stop the algorithm
-    stopTimer(intervalId);
-    socket.emit('stop_algorithm', {});
-    lineGroup.selectAll('path').remove();
-    algorithmSelect.disabled = false;
-    pointRange.disabled = false;
-    playBtn.disabled = false;
-    // Reset the button text to "Play"
-    playBtn.textContent = 'Play';
-    pauseBtn.disabled = true;
-    stopBtn.disabled = true;
-    isPaused = false;
-    manual.disabled = false;
-    resetAllText();
+    stopAlgorithm();
 });
 
 // Update range span values
@@ -304,30 +160,8 @@ eliteSizeRange.addEventListener("input", () => {
     eliteCount.textContent = eliteSizeRange.value;
 });
 
-
 populationRange.addEventListener('input', () => {
-    const populationValue = parseInt(populationRange.value);
-    populationCount.textContent = populationValue;
-
-    // Update the max value of the tournament and elite size range
-    tournamentSizeRange.max = populationValue > 50? 50: populationValue;
-    eliteSizeRange.max = populationValue > 50? 50: populationValue;
-
-    // Adjust the value of the tournament size range if necessary
-    if (parseInt(tournamentSizeRange.value) > populationValue) {
-        tournamentSizeRange.value = Math.floor(populationValue / 3);
-        tournamentSizeCount.textContent = tournamentSizeRange.value;
-    } else {
-        tournamentSizeCount.textContent = tournamentSizeRange.value;
-    }
-
-    // Adjust the value of the elite size range if necessary
-    if (parseInt(eliteSizeRange.value) > populationValue) {
-        eliteSizeRange.value = Math.floor(populationValue / 3);
-        eliteCount.textContent = tournamentSizeRange.value;
-    } else {
-        eliteCount.textContent = tournamentSizeRange.value;
-    }
+    populateionRangeInput();
 });
 
 greedyRange.addEventListener("input", () => {
@@ -346,12 +180,7 @@ speedRange.addEventListener("input", () => {
     speedCount.textContent = speedRange.value;
 });
 
-colorRange.addEventListener("input", () => {
-    const paths = document.querySelectorAll('path:not(.calc)');
-    paths.forEach(path => {
-    path.style.fill = getRandomHSL();
-    });
-});
+colorRange.addEventListener("input", colorRangeInput);
 
 
 // Handle the points data from the backend
@@ -390,14 +219,9 @@ socket.on('algorithm_finished', function(data) {
     // Stop the algorithm
     socket.emit('stop_algorithm', {});
     stopTimer(intervalId);
-    playBtn.disabled = false;
-    // Reset the button text to "Play"
-    playBtn.textContent = 'Play';
-    pauseBtn.disabled = true;
-    stopBtn.disabled = true;
-    algorithmSelect.disabled = false;
-    pointRange.disabled = false;
-    manual.disabled = false;
+    togglePlayButtonText(false);
+    toggleControls(false, true, true);
+    [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
 });
 
 
@@ -415,8 +239,8 @@ const circleGroup = svg.append('g').attr('class', 'circles');
 function updatePoints() {
         possiblePaths.innerText = calculatePossiblePaths(points.length);
         // Clear the circles and lines from the canvas
-        circleGroup.selectAll('circle').remove();
-        lineGroup.selectAll('path').remove();
+        removeAllCirles();
+        removeAllPaths();
 
         // Create circles for each point
         circleGroup.selectAll('circle')
@@ -437,7 +261,7 @@ function updateLines(solution, points, type) {
     const solutionPoints = solution.map(index => points[index]);
 
     // Clear lines from the canvas
-    lineGroup.selectAll('path').remove();
+    removeAllPaths();
     
     // No lines to draw if fewer than 2 points
     if (solutionPoints.length < 2 || pointRange.value == 1) {
@@ -556,18 +380,16 @@ function stopTimer() {
     intervalId = null;
 }
 
-
 function resetAllText(){
     elapsedTime.textContent = "Elapsed: 0";
     bestDistance.textContent = "Best: 0";
     worseDistance.textContent = "Worse: 0";
     averageDistance.textContent = "Average: 0";
     epoch.textContent = "Epoch: 0";
-    distance.textContent = "Distance: 0"
+    distance.textContent = "Distance: 0";
+    playBtn.innerText = "Play";
+    toggleManualButtonText(true);
 }
-
- // Select all range inputs
- const rangeInputs = document.querySelectorAll('input[type="range"]');
 
  // Function to update the background of a range input
  function updateRangeBackground(rangeInput) {
@@ -596,4 +418,210 @@ function getRandomHSL() {
     const s = Math.floor(Math.random() * 31) + 70;
     const l = Math.floor(Math.random() * 20) + 2;
     return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+function toggleElementDisplay(element, show){
+    element.style.display = show ? "block" : "none";
+}
+
+function toggleButtonState(button, isDisabled){
+    button.disabled = isDisabled;
+}
+
+function toggleControls(play, pause, stop){
+    toggleButtonState(stopBtn, stop);
+    toggleButtonState(pauseBtn, pause);
+    toggleButtonState(playBtn, play);
+}
+
+function togglePlayButtonText(isPaused){
+    playBtn.innerText = isPaused? "Resume": "Play";
+}
+
+function resetToInitialState(){
+    socket.emit('get_points', { numPoints: numPoints, manual: false });
+    socket.emit('stop_algorithm', {});
+    stopTimer(intervalId);
+    removeAllPaths();
+    toggleCursor(false);
+    [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
+    toggleControls(true, true, true);
+    resetAllText();
+    isPaused = false;
+}
+
+function populateionRangeInput(){
+    const populationValue = parseInt(populationRange.value);
+    populationCount.textContent = populationValue;
+
+    // Update the max value of the tournament and elite size range
+    tournamentSizeRange.max = populationValue > 50? 50: populationValue;
+    eliteSizeRange.max = populationValue > 50? 50: populationValue;
+
+    // Adjust the value of the tournament size range if necessary
+    if (parseInt(tournamentSizeRange.value) > populationValue) {
+        tournamentSizeRange.value = Math.floor(populationValue / 3);
+        tournamentSizeCount.textContent = tournamentSizeRange.value;
+    } else {
+        tournamentSizeCount.textContent = tournamentSizeRange.value;
+    }
+
+    // Adjust the value of the elite size range if necessary
+    if (parseInt(eliteSizeRange.value) > populationValue) {
+        eliteSizeRange.value = Math.floor(populationValue / 3);
+        eliteCount.textContent = tournamentSizeRange.value;
+    } else {
+        eliteCount.textContent = tournamentSizeRange.value;
+    }
+}
+
+function stopAlgorithm(){
+    // Stop the algorithm
+    isPaused = false;
+    stopTimer(intervalId);
+    socket.emit('stop_algorithm', {});
+    removeAllPaths();
+    togglePlayButtonText(isPaused);
+    [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
+    toggleControls(false, true, true);
+    resetAllText();
+}
+
+function pauseAlgorithm(){
+    // Pause the algorithm
+    socket.emit('pause_algorithm', {});
+    toggleControls(false, true, false);
+    isPaused = true;
+    togglePlayButtonText(isPaused);
+}
+
+// Function to get algorithm-specific parameters
+function getAlgorithmParams(selectedAlgorithm) {
+    if (selectedAlgorithm === "random") {
+        return { averageNum: averageCheck.checked ? parseInt(averageRange.value) : 1 };
+    } 
+    
+    if (selectedAlgorithm === "genetic") {
+        return {
+            populationSize: parseInt(populationRange.value),
+            greedyRatio: parseInt(greedyRange.value) / 100,
+            selection: selectionSelect.value === "tournament" ? 1 : 2,
+            tournamentSize: parseInt(tournamentSizeRange.value),
+            elite: eliteCheck.checked,
+            eliteSize: parseInt(eliteSizeRange.value),
+            crossover : crossoverSelect.value == "ordered"? 1:
+                        crossoverSelect.value == "partially matched"? 2: 3,
+            mutation: mutationSelect.value === "swap" ? 1 : 2,
+            mutationProbability: parseInt(mutationRange.value) / 100,
+            epochNum: parseInt(epochRange.value),
+        };
+    }
+}
+
+function playAlgorithm(){
+    const selectedAlgorithm = algorithmSelect.value;
+    if (selectedAlgorithm !== "random" || averageCheck.checked) {
+        [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, true));
+        startTimer();
+    }
+
+    if (!isPaused) {
+        removeAllPaths();
+        const params = getAlgorithmParams(selectedAlgorithm);
+
+        socket.emit("start_algorithm", {
+            algorithm: selectedAlgorithm,
+            numPoints,
+            ...params,
+        });
+
+        if (selectedAlgorithm === 'random' && !averageCheck.checked){
+            toggleControls(false, true, true);
+        }
+        else
+        {
+            toggleControls(true, false, false);
+        }
+    } else {
+        // Resume the algorithm when paused
+        socket.emit('resume_algorithm', {});
+        startTimer();
+        toggleControls(true, false, false);
+        isPaused = false;
+    }
+}
+
+function pointRangeInput(){
+    pointCount.textContent = pointRange.value;
+    numPoints = parseInt(pointRange.value);
+
+    // Send request to backend for new points
+    socket.emit('get_points', { numPoints: numPoints, manual: false });
+}
+
+function speedRangeInput(){
+    const delay = speedRange.value/100;
+    socket.emit('update_delay', {delay: delay});
+}
+
+function algorithmSelectChange(){
+    algorithmSet = true;
+    toggleControls(false, true, true);
+    resetAllText();
+    if (algorithmSelect.value === "random") {
+        toggleElementDisplay(randomOptions, true);
+        if (!averageCheck.checked){
+            toggleControls(false, true, true);
+        }
+        // hide genetic algorithm options
+        toggleElementDisplay(geneticOptions, false);
+        distance.textContent = `Distance: 0`
+        averageCheck.checked = false;
+    }
+    else if (algorithmSelect.value === "genetic"){
+        toggleElementDisplay(geneticOptions, true);
+        // hide random algorithm options
+        toggleElementDisplay(randomOptions, false);
+    } 
+    else {
+        distance.textContent = `Distance: 0`
+        toggleElementDisplay(geneticOptions, false);
+        toggleElementDisplay(randomOptions, false);
+    }
+}
+
+function averageCheckChange(){
+    if (averageCheck.checked) {
+        distance.textContent = `Average Distance: 0`
+        toggleElementDisplay(averageCountInput, true);
+    } else {
+        distance.textContent = `Distance: 0`
+        toggleElementDisplay(averageCountInput, false);
+    }
+}
+
+
+function selectionSelectChange(){
+    if (selectionSelect.value === "tournament"){
+        toggleElementDisplay(tournamentSizeInput, true);
+    }
+    else{
+        toggleElementDisplay(tournamentSizeInput, false);
+    }
+}
+
+function eliteCheckChange(){
+    if (eliteCheck.checked) {
+        toggleElementDisplay(eliteSizeInput, true);
+
+    } else {
+        toggleElementDisplay(eliteSizeInput, false);
+    }
+}
+
+function colorRangeInput(){
+    const paths = document.querySelectorAll('path:not(.calc)');
+    paths.forEach(path => {
+    path.style.fill = getRandomHSL();
+    });
 }
