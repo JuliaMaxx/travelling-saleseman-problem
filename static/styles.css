@@ -3,6 +3,7 @@ body {
     margin: 0;
     background-color: rgb(40, 53, 39);
     background-size: cover;
+    font-size: clamp(14px, 1vw + 0.5rem, 18px);;
 }
 
 main {
@@ -16,33 +17,33 @@ h1 {
     color: rgb(15, 20, 14);
     font-weight: 400;
     font-family: "Noto Sans", cursive;
-    font-size: 35px;
+    font-size: 1.8rem;
 }
 h2 {
-    margin-top: -40px;
+    margin-top: -2rem;
     padding-top: 0;
     color: rgb(32, 44, 30);
     text-align: center;
     font-family: "Indie Flower", cursive;
-    font-size: 45px;
+    font-size: 2rem;
 }
 p, div, button, input, label, select, option, span {
     color:rgb(32, 44, 30);
     font-family: "Noto Sans", cursive;
     font-weight: 700;
-    font-size: 19px;
+    font-size: 1rem;
 }
 hr{
     border: none; 
     height: 0px; 
     background-color: rgb(180, 199, 183);
-    margin: 10px 0;
+    margin: 0.8rem 0;
 }
 .info {
     color:rgb(180, 199, 183);
 }
 #epoch {
-    font-size: 40px;
+    font-size: 2rem;
     font-family: "Indie Flower", cursive;
 }
 
@@ -52,9 +53,6 @@ button {
     border: none;
     color: rgb(212, 198, 198);
     font-weight: 500;
-    border-radius: 1px;
-    padding: 8px 20px;
-    box-shadow: 2px 1px 2px rgba(32, 44, 30, 0.441);
     transition: all 0.1s ease-in-out;
 }
 button:hover {
@@ -71,14 +69,14 @@ button:disabled{
 
 /* NAVIGATION */
 nav {
-    padding: 10px 35px 50px;
+    flex: 0 0 clamp(250px, 22vw, 400px);
+    padding: 0.6rem 2rem 3rem;
     background-color: rgb(80, 97, 80);
-    width: 400px;
-    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.236);
+    box-shadow: 0.4rem 0px 0.7rem rgba(0, 0, 0, 0.236);
     overflow-y: scroll;
 }
 nav::-webkit-scrollbar {
-    width: 4px; 
+    width: 0.2rem; 
 }
 nav::-webkit-scrollbar-track {
     background: rgb(80, 97, 80);
@@ -98,18 +96,17 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 4px;
     background: transparent;
     outline: none;
     transition: background 0.3s ease-in-out;
-    margin-bottom: 10px;
+    margin-bottom: 0.6rem;
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 17px; 
-    height: 17px;
+    width: 1rem; 
+    height: 1rem;
     background: rgb(69, 160, 73);
     border-radius: 50%;
     cursor: pointer; 
@@ -119,8 +116,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-    height: 4px;
-    border-radius: 5px;
+    height: 0.3rem;
+    border-radius: 0.4rem;
     background: linear-gradient(to right,  rgb(69, 160, 73) var(--value, 50%), rgb(212, 198, 198) var(--value, 50%));
 }
 
@@ -146,12 +143,15 @@ select {
     color: rgb(212, 198, 198);
     width: 100%;
     font-weight: 500;
-    border-radius: 5px;
-    padding: 8px 20px;
-    box-shadow: 2px 1px 2px rgba(32, 44, 30, 0.441);
     transition: all 0.1s ease-in-out;
     cursor: pointer;
     position: relative;
+}
+
+button, select {
+    border-radius: 0.3rem;
+    padding: 0.5rem 1.2rem;
+    box-shadow: 0.1rem 0.08rem 0.15rem rgba(32, 44, 30, 0.441);
 }
 
 select::-ms-expand {
@@ -161,19 +161,20 @@ select::-ms-expand {
 .custom-select::after {
     content: '▼';
     position: absolute;
-    right: 10px;
+    right: 0.7rem;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
     color: rgb(32, 44, 30);
-    font-size: 18px;
+    font-size: 1rem;
 }
 
 select option {
-    padding: 10px;
+    padding: 0.6rem;
+    font-weight: 600;
     background-color:rgb(80, 97, 80);
     color: rgb(212, 198, 198);
-    font-size: 16px;
+    font-size: 1rem;
 }
 
 select:disabled {
@@ -185,10 +186,10 @@ select:disabled {
 }
 
 input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-  }
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 0.2rem;
+}
 
 
 /* CANVAS */
@@ -197,21 +198,26 @@ input[type="checkbox"] {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    height: 96%;
+    padding-top: 1rem;
+}
+
+.canvas-container {
+    width: 96%;
+    height: 96%;
     position: relative;
-    width: 1400px;
-    height: 857px;
+    align-self: center;
 }
 
 #canvas {
-    width: 1400px;
-    height: 857px;
-    position: relative; 
+    width: 100%;
+    height: 100%;
 }
 
 /* WORD MAP */
 svg {
     position: absolute;
-    top: 10px;
     width: 100%;
     height: 100%;
 }

@@ -16,13 +16,19 @@ config.pause_event.set()
 def home():
     return render_template('index.html')
 
+
 # Event to send points from backend to frontend
 @socketio.on('get_points')
 def handle_points(data):
     manual = data['manual']
     num_points = data['numPoints']
+    x_min = data['xMin']
+    x_max = data['xMax']
+    y_max = data['yMax']
+    y_min = data['yMin']
+    
     if not manual:
-        config.POINTS = [{'x': random.randint(50, 1350), 'y': random.randint(8, 830)} for _ in range(num_points)]
+        config.POINTS = [{'x': random.randint(x_min, x_max), 'y': random.randint(y_min, y_max)} for _ in range(num_points)]
         emit('receive_points', {'points': config.POINTS})
     else:
         config.POINTS = num_points

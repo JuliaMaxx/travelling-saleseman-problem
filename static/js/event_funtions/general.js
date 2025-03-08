@@ -4,6 +4,7 @@ import {
 import { 
     pointRange, algorithmSelect, playBtn, pointCount, speedRange, speedCount, distance, averageCheck, geneticOptions, randomOptions } from "../dom.js";
 import { socket } from "../socket.js";
+import { emitGetPoints } from "../socket.js";
 
 export function manualSelection() {
     if (!config.isSelecting){
@@ -17,11 +18,11 @@ export function manualSelection() {
     }
     else {
         if (config.points.length < 1){
-            socket.emit('get_points', { numPoints: config.numPoints, manual: false });
+            emitGetPoints(config.numPoints, false);
             config.isSelecting = false;
         }
         else{
-            socket.emit('get_points', { numPoints: config.points, manual: true });
+            emitGetPoints(config.numPoints, true);
         }
         toggleManualButtonText(true);
         toggleCursor(false);
@@ -44,7 +45,7 @@ export function pointRangeInput(){
     config.numPoints = parseInt(pointRange.value);
 
     // Send request to backend for new points
-    socket.emit('get_points', { numPoints: config.numPoints, manual: false });
+    emitGetPoints(config.numPoints, false);
 }
 
 export function speedRangeInput(){

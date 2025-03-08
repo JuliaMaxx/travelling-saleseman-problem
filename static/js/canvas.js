@@ -1,6 +1,7 @@
 import { config } from "./config.js";
 import { possiblePaths } from "./dom.js";
 import { removeAllCirles, removeAllPaths, calculatePossiblePaths } from "./utils.js"
+import { getValidRange } from "./event_funtions/map.js";
 
 export const svg = d3.select('#canvas')
 .append('svg')
@@ -24,7 +25,7 @@ export function updatePoints() {
         .append('circle')
         .attr('cx', d => d.x)
         .attr('cy', d => d.y)
-        .attr('r', 7)
+        .attr('r', 4)
         .attr('fill', 'rgb(212, 198, 198)');
 
         // Ensure the circle group is brought to the front
@@ -73,5 +74,20 @@ export function updateLines(solution, points, type) {
        .attr('class', 'calc')
        .attr('fill', 'none')
        .attr('stroke', lineColor)
-       .attr('stroke-width', 2.5);
+       .attr('stroke-width', 1.5);
+}
+
+export function toggleCursorEvent(event){
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left; // Adjust to canvas coordinates
+    const y = event.clientY - rect.top;
+    const validRange = getValidRange();
+
+    // Check if the cursor is within the valid range
+    if (x >= validRange.xMin && x <= validRange.xMax && 
+        y >= validRange.yMin && y <= validRange.yMax) {
+        canvas.style.cursor = 'pointer';
+    } else {
+        canvas.style.cursor = 'default';
+    }
 }

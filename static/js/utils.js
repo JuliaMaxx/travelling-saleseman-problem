@@ -4,9 +4,21 @@ import {
 import { circleGroup, lineGroup } from "./canvas.js";
 import { socket } from "./socket.js";
 import { stopTimer } from "./timer.js";
+import { toggleCursorEvent } from "./canvas.js";
+import { emitGetPoints } from "./socket.js";
 
 export function toggleCursor(isSelecting){
-    canvas.style.cursor = isSelecting? "pointer": "default" ;
+    if (isSelecting){
+        canvas.addEventListener('mousemove', (event) => {
+            toggleCursorEvent(event);
+        });
+    }
+    else {
+        canvas.removeEventListener('mousemove', (event) => {
+            toggleCursorEvent(event);
+        });
+    }
+
 }
 
 export function removeAllCirles(){
@@ -77,8 +89,8 @@ export function getRandomHSL() {
       h = Math.floor(Math.random() * 360);
     } while (h >= 70 && h <= 170);
   
-    const s = Math.floor(Math.random() * 31) + 70;
-    const l = Math.floor(Math.random() * 20) + 2;
+    const s = Math.floor(Math.random() * 41) + 100;
+    const l = Math.floor(Math.random() * 20) + 4;
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
@@ -101,7 +113,7 @@ export function calculatePossiblePaths(numPoints) {
 }
 
 export function resetToInitialState(){
-    socket.emit('get_points', { numPoints: config.numPoints, manual: false });
+    emitGetPoints(config.numPoints, false);
     socket.emit('stop_algorithm', {});
     stopTimer(config.intervalId);
     removeAllPaths();

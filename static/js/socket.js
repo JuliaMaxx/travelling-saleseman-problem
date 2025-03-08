@@ -5,6 +5,7 @@ import { updateLines, updatePoints } from "./canvas.js";
 import { toggleButtonState, toggleControls, togglePlayButtonText } from "./utils.js";
 import { config } from "./config.js";
 import { stopTimer } from "./timer.js";
+import { getValidRange } from "./event_funtions/map.js";
     
 export const socket = io();
 
@@ -48,5 +49,17 @@ export function setUpSocketEvents(){
         togglePlayButtonText(false);
         toggleControls(false, true, true);
         [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
+    });
+}
+
+export function emitGetPoints(numPoints, manual){
+    const validRange = getValidRange();
+    socket.emit('get_points', { 
+        numPoints: numPoints,
+        manual: manual,
+        xMax: validRange.xMax,
+        xMin: validRange.xMin,
+        yMax: validRange.yMax,
+        yMin: validRange.yMin
     });
 }
