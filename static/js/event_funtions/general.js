@@ -22,7 +22,7 @@ export function manualSelection() {
             config.isSelecting = false;
         }
         else{
-            emitGetPoints(config.numPoints, true);
+            emitGetPoints(config.points, true);
         }
         toggleManualButtonText(true);
         toggleCursor(false);

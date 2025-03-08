@@ -53,3 +53,7 @@ export const mutationRange = document.getElementById("mutationRange");
 export const mutationCount = document.getElementById("mutationCount");
 export const epochRange = document.getElementById("epochRange");
 export const epochCount = document.getElementById("epochCount");
+
+// Nav
+export const hamburgerBtn = document.getElementById('hamburgerMenu');
+export const nav = document.getElementById('navigation');

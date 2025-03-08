@@ -1,6 +1,6 @@
 import { config } from "./config.js";
 import { 
-    canvas, playBtn, pauseBtn, stopBtn, manual, averageCheck, averageRange, populationRange, greedyRange, selectionSelect, tournamentSizeRange, eliteCheck, eliteSizeRange, crossoverSelect, mutationSelect, mutationRange, epochRange, pointRange, algorithmSelect, paths, elapsedTime, bestDistance, worseDistance, averageDistance, epoch, distance } from "./dom.js";
+    canvas, playBtn, pauseBtn, stopBtn, manual, averageCheck, averageRange, populationRange, greedyRange, selectionSelect, tournamentSizeRange, eliteCheck, eliteSizeRange, crossoverSelect, mutationSelect, mutationRange, epochRange, pointRange, algorithmSelect, paths, elapsedTime, bestDistance, worseDistance, averageDistance, epoch, distance, nav, hamburgerBtn } from "./dom.js";
 import { circleGroup, lineGroup } from "./canvas.js";
 import { socket } from "./socket.js";
 import { stopTimer } from "./timer.js";
@@ -136,4 +136,8 @@ export function resetAllText(){
     distance.textContent = "Distance: 0";
     playBtn.innerText = "Play";
     toggleManualButtonText(true);
+}
+
+export function hamburgerClick(){
+    nav.classList.toggle('active');
 }

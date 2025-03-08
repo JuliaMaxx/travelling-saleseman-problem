@@ -1,5 +1,5 @@
 import{
-    manual, colorRange, pointRange, speedRange, algorithmSelect, rangeInputs, playBtn, pauseBtn, stopBtn, averageCheck, selectionSelect, eliteCheck, averageRange, populationRange, tournamentSizeRange, eliteSizeRange, greedyRange, mutationRange, epochRange } from "./dom.js"
+    manual, colorRange, pointRange, speedRange, algorithmSelect, rangeInputs, playBtn, pauseBtn, stopBtn, averageCheck, selectionSelect, eliteCheck, averageRange, populationRange, tournamentSizeRange, eliteSizeRange, greedyRange, mutationRange, epochRange, hamburgerBtn } from "./dom.js"
 import { svg } from "./canvas.js";
 import { 
     manualSelection, colorRangeInput, pointRangeInput, speedRangeInput, algorithmSelectChange, updateRangeBackground } from "./event_funtions/general.js"
@@ -9,7 +9,7 @@ import { averageCheckChange, averageRangeInput } from "./event_funtions/random.j
 import { 
     selectionSelectChange, eliteCheckChange, populateionRangeInput, tournamentSizeRangeInput, eliteSizeRangeInput, greedyRangeInput, mutationRangeInput, epochRangeInput 
 } from "./event_funtions/genetic.js";
-import { resetToInitialState } from "./utils.js";
+import { hamburgerClick, resetToInitialState } from "./utils.js";
 
 export function setUpEventListeners(){
     // general
@@ -41,4 +41,5 @@ export function setUpEventListeners(){
     mutationRange.addEventListener("input", mutationRangeInput);
     epochRange.addEventListener("input", epochRangeInput);
     window.addEventListener('resize', resetToInitialState);
+    hamburgerBtn.addEventListener('click', hamburgerClick)
 }    
