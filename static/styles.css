@@ -273,3 +273,21 @@ path {
         height: 80%;
     }
 }
+
+@media(max-width: 600px){
+    .canvas-container {
+        width: 90vh; 
+        height: 80vw;
+        transform: rotate(90deg);
+        transform-origin: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    svg, #canvas {
+        width: 100%;
+        height: 100%;
+    }
+}
