@@ -140,4 +140,22 @@ export function resetAllText(){
 
 export function hamburgerClick(){
     nav.classList.toggle('active');
+    if (nav.classList.contains('active')){
+        hamburgerBtn.style.width = `${nav.clientWidth}px`;
+        hamburgerBtn.style.left = '0';
+        hamburgerBtn.style.top = '-5px';
+    }
+    else {
+        hamburgerBtn.style.position = "absolute";
+        hamburgerBtn.style.width = '4.5rem';
+        hamburgerBtn.style.top = '0.5rem';
+        hamburgerBtn.style.left = '0.5rem';
+    }
 }
+
+const resizeObserver = new ResizeObserver(() => {
+    if (nav.classList.contains('active')) {
+        hamburgerBtn.style.width = `${nav.clientWidth}px`;
+    }
+});
+resizeObserver.observe(nav);
