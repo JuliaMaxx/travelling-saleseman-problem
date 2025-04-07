@@ -25,10 +25,10 @@ export function manualSelection() {
             emitGetPoints(config.points, true);
         }
         toggleManualButtonText(true);
-        toggleCursor(false);
         let play = config.algorithmSet? false: true;
         toggleControls(play, true, true);
         [pointRange, algorithmSelect].forEach(el => toggleButtonState(el, false));
+        toggleCursor(false);
         config.isSelecting = false;
     }
 }

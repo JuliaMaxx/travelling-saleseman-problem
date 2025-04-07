@@ -34,7 +34,7 @@
         - Disables automatic range √
     - If no points chosen, back to automatic √
     - Pointer cursor √
-    - Cursor resets after clicking "Finish" ❌
+    - Cursor resets after clicking "Finish" √
 
 ## Map color
 - Range changes map color to random non-green colors √

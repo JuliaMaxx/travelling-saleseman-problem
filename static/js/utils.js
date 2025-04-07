@@ -9,14 +9,11 @@ import { emitGetPoints } from "./socket.js";
 
 export function toggleCursor(isSelecting){
     if (isSelecting){
-        canvas.addEventListener('mousemove', (event) => {
-            toggleCursorEvent(event);
-        });
+        canvas.addEventListener('mousemove', toggleCursorEvent);
     }
     else {
-        canvas.removeEventListener('mousemove', (event) => {
-            toggleCursorEvent(event);
-        });
+        canvas.removeEventListener('mousemove', toggleCursorEvent);
+        canvas.style.cursor = 'default';
     }
 
 }
