@@ -67,7 +67,7 @@ export function algorithmSelectChange(){
         }
         // hide genetic algorithm options
         toggleElementDisplay(geneticOptions, false);
-        distance.textContent = `Distance: 0`
+        distance.textContent = `Distance: 0km`
         averageCheck.checked = false;
     }
     else if (algorithmSelect.value === "genetic"){
@@ -76,7 +76,7 @@ export function algorithmSelectChange(){
         toggleElementDisplay(randomOptions, false);
     } 
     else {
-        distance.textContent = `Distance: 0`
+        distance.textContent = `Distance: 0km`
         toggleElementDisplay(geneticOptions, false);
         toggleElementDisplay(randomOptions, false);
     }

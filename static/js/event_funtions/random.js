@@ -3,10 +3,10 @@ import { toggleElementDisplay } from "../utils.js";
 
 export function averageCheckChange(){
     if (averageCheck.checked) {
-        distance.textContent = `Average Distance: 0`
+        distance.textContent = `Average Distance: 0km`
         toggleElementDisplay(averageCountInput, true);
     } else {
-        distance.textContent = `Distance: 0`
+        distance.textContent = `Distance: 0km`
         toggleElementDisplay(averageCountInput, false);
     }
 }

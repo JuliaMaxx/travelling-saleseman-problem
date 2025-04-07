@@ -128,12 +128,12 @@ export function resetToInitialState(){
 }
 
 export function resetAllText(){
-    elapsedTime.textContent = "Elapsed: 0";
-    bestDistance.textContent = "Best: 0";
-    worseDistance.textContent = "Worse: 0";
-    averageDistance.textContent = "Average: 0";
+    elapsedTime.textContent = "Elapsed: 0s";
+    bestDistance.textContent = "Best: 0km";
+    worseDistance.textContent = "Worse: 0km";
+    averageDistance.textContent = "Average: 0km";
     epoch.textContent = "Epoch: 0";
-    distance.textContent = "Distance: 0";
+    distance.textContent = "Distance: 0km";
     playBtn.innerText = "Play";
     toggleManualButtonText(true);
 }

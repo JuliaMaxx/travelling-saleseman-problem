@@ -6,7 +6,7 @@ export function startTimer() {
         config.intervalId = setInterval(() => {
             if (!config.isPaused) { // Update only if not paused
                 config.elapsedTimeInSeconds++;
-                elapsedTime.textContent = `Elapsed: ${config.elapsedTimeInSeconds}`;
+                elapsedTime.textContent = `Elapsed: ${config.elapsedTimeInSeconds}s`;
             }
         }, 1000);
     }

@@ -4,8 +4,8 @@
 - Algorithm button enabled √
 - Controls disabled √
 - 10 points displayed √
-- Distance in km ❌
-- Elapsed in secods ❌
+- Distance in km √
+- Elapsed in secods √
 
 ## Mobile Compatibility
 - Laptop scaling works √
@@ -81,9 +81,9 @@
 - Distance shown √
 - Elapsed shown √
 - Epoch shown √
-- Best shown in km ❌
-- Worst shown in km ❌
-- Average shown in km ❌
+- Best shown in km √
+- Worst shown in km √
+- Average shown in km √
 - Everything except controls, delay and color is disabled during execution ❌
 - Epoch range 
     - Min 2 ❌

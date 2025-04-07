@@ -18,20 +18,20 @@ export function setUpSocketEvents(){
     
     // Display information about the epoch
     socket.on('update_info', function(data) {
-        bestDistance.textContent = `Best distance: ${data['best']}`
-        worseDistance.textContent = `Worse distance: ${data['worse']}`
-        averageDistance.textContent = `Average distance: ${data['average']}`
+        bestDistance.textContent = `Best distance: ${data['best']}km`
+        worseDistance.textContent = `Worse distance: ${data['worse']}km`
+        averageDistance.textContent = `Average distance: ${data['average']}km`
         epoch.textContent = `Epoch ${data['epoch']}`
     });
     
     // Display distance in genetic and random solutions
     socket.on('update_distance', function(data) {
-        distance.textContent = `Distance: ${data['distance']}`
+        distance.textContent = `Distance: ${data['distance']}km`
     });
     
     // Display distance in genetic and random solutions
     socket.on('update_average_distance', function(data) {
-        distance.textContent = `Average Distance: ${data['distance']}`
+        distance.textContent = `Average Distance: ${data['distance']}km`
     });
     
     // Handle backend sending updates on algorithm progress
