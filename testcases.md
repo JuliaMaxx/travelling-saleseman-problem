@@ -4,11 +4,13 @@
 - Algorithm button enabled √
 - Controls disabled √
 - 10 points displayed √
+
 ## Mobile Compatibility
 - Laptop scaling works √
 - Burger menu for tablets and mobile √
 - Map flip for mobile √
 - Menu scales properly for mobile and tablet ❌
+
 ## Point selection
 - Automatic
     - Proper amount √
@@ -31,3 +33,9 @@
     - If no points chosen, back to automatic √
     - Pointer cursor √
     - Cursor resets after clicking "Finish" ❌
+
+## Map color
+- Range changes map color to random non-green colors √
+
+## Visualization delay
+- Works to slowdown/speedup each algorithm √
