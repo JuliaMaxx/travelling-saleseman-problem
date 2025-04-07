@@ -90,7 +90,7 @@ export function getRandomHSL() {
     } while (h >= 70 && h <= 170);
   
     const s = Math.floor(Math.random() * 41) + 100;
-    const l = Math.floor(Math.random() * 20) + 8;
+    const l = Math.floor(Math.random() * 10) + 16;
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
