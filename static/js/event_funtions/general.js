@@ -1,6 +1,7 @@
 import { config } from "../config.js";
 import { 
-    toggleManualButtonText, removeAllCirles, removeAllPaths, toggleButtonState, toggleCursor, getRandomHSL, toggleControls, resetAllText, toggleElementDisplay } from "../utils.js";
+    toggleManualButtonText, removeAllCirles, removeAllPaths, toggleButtonState, toggleCursor, getRandomHSL, toggleControls, resetAllText, toggleElementDisplay, 
+    resetToInitialState} from "../utils.js";
 import { 
     pointRange, algorithmSelect, playBtn, pointCount, speedRange, speedCount, distance, averageCheck, geneticOptions, randomOptions } from "../dom.js";
 import { socket } from "../socket.js";
@@ -58,6 +59,7 @@ export function algorithmSelectChange(){
     config.algorithmSet = true;
     toggleControls(false, true, true);
     resetAllText();
+    removeAllPaths();
     if (algorithmSelect.value === "random") {
         toggleElementDisplay(randomOptions, true);
         if (!averageCheck.checked){
