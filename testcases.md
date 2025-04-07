@@ -64,7 +64,7 @@
     - On Play
         - Point selection is disabled √
         - Algorithm selection is disabled √
-        - Calculate Average is disabled  ❌
+        - Calculate Average is disabled √
 - Range dissapears when average is unchecked √
 - Settings are saved when comming from other options ❌
     - Calculate Average is unckecked
@@ -84,7 +84,7 @@
 - Best shown in km √
 - Worst shown in km √
 - Average shown in km √
-- Everything except controls, delay and color is disabled during execution ❌
+- Everything except controls, delay and color is disabled during execution √
 - Epoch range 
     - Min 2 ❌
     - Max 100 √

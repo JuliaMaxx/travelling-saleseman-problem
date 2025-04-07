@@ -6,6 +6,7 @@ import { toggleButtonState, toggleControls, togglePlayButtonText } from "./utils
 import { config } from "./config.js";
 import { stopTimer } from "./timer.js";
 import { getValidRange } from "./event_funtions/map.js";
+import { toggleAlgorithmOptions } from "./utils.js";
     
 export const socket = io();
 
@@ -45,9 +46,10 @@ export function setUpSocketEvents(){
     socket.on('algorithm_finished', function(data) {
         // Stop the algorithm
         socket.emit('stop_algorithm', {});
+        toggleControls(false, true, true);
+        toggleAlgorithmOptions(algorithmSelect.value, false);
         stopTimer(config.intervalId);
         togglePlayButtonText(false);
-        toggleControls(false, true, true);
         [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
     });
 }

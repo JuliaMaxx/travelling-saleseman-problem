@@ -1,6 +1,7 @@
 import { algorithmSelect, averageCheck, pointRange, manual } from "../dom.js";
 import { 
-    toggleButtonState, removeAllPaths, getAlgorithmParams, toggleControls, togglePlayButtonText, resetAllText } from "../utils.js";
+    toggleButtonState, removeAllPaths, getAlgorithmParams, toggleControls, togglePlayButtonText, resetAllText, 
+    toggleAlgorithmOptions} from "../utils.js";
 import { startTimer, stopTimer } from "../timer.js";
 import { socket } from "../socket.js";
 import { config } from "../config.js";
@@ -9,6 +10,7 @@ export function playAlgorithm(){
     const selectedAlgorithm = algorithmSelect.value;
     if (selectedAlgorithm !== "random" || averageCheck.checked) {
         [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, true));
+        toggleAlgorithmOptions(selectedAlgorithm, true);
         startTimer();
     }
 
@@ -50,6 +52,7 @@ export function stopAlgorithm(){
     // Stop the algorithm
     config.isPaused = false;
     stopTimer(config.intervalId);
+    toggleAlgorithmOptions(algorithmSelect.value, false);
     socket.emit('stop_algorithm', {});
     removeAllPaths();
     togglePlayButtonText(config.isPaused);
