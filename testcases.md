@@ -4,6 +4,8 @@
 - Algorithm button enabled √
 - Controls disabled √
 - 10 points displayed √
+- Distance in km ❌
+- Elapsed in secods ❌
 
 ## Mobile Compatibility
 - Laptop scaling works √
@@ -39,3 +41,89 @@
 
 ## Visualization delay
 - Works to slowdown/speedup each algorithm √
+
+## Algorithms
+### Greedy
+- "Play" button enabled √
+- Distance is shown between each point √
+- Total distance in the end √
+- Elapsed seconds √
+- Pause/Resume √
+- Stop √
+### Random
+- "Play" button enabled √
+- "Calculate average is disabled by default" √
+- Total distance shown √
+- When calculate average is checked
+    - Range appears √
+    - On Play average distance is calculated √
+    - Elapsed seconds √
+    - Pause/Resume √
+    - Stop √
+    - Average distance is displayed in the end √
+    - On Play
+        - Point selection is disabled √
+        - Algorithm selection is disabled √
+        - Calculate Average is disabled  ❌
+- Range dissapears when average is unchecked √
+- Settings are saved when comming from other options ❌
+    - Calculate Average is unckecked
+### Genetic
+- "Play" button is enabled √
+- Play/Resume √
+- Pause on low speed √
+- Stop on low speed √
+- Pause on high speed ❌
+- Stop on high speed ❌
+- Stop resets text data √
+    - Dstance resets ❌
+- Play resets epoch data ❌
+- Distance shown √
+- Elapsed shown √
+- Epoch shown √
+- Best shown in km ❌
+- Worst shown in km ❌
+- Average shown in km ❌
+- Everything except controls, delay and color is disabled during execution ❌
+- Epoch range 
+    - Min 2 ❌
+    - Max 100 √
+- Greedy Ration range
+    - Min 0 √
+    - Max 100 √
+- Mutation
+    - Swap √
+    - Inversion √
+    - Min 1 √
+    - Max 100 √
+- Population Size
+    - Min 3 √
+    - Max 200 √
+- Crossover
+    - Ordered √
+    - Partially Matched √
+    - Cycle √
+- Selection 
+    - Tournament √
+        - Range appears when checked √
+        - If population >= 50
+            - Min 3 √
+            - Max 50 √
+            - Range visuals √
+        - If population < 50
+            - Min 3 √
+            - Max = population size √
+            - Range visuals ❌
+    - Roulette √
+- Elite
+    - Range appears when checked √
+    - If population >= 50
+        - Min 3 √
+        - Max 50 √
+        - Range visuals √
+    - If population < 50
+        - Min 3 √
+        - Max = population size √
+        - Range visuals ❌
+- Works with highest load: 200p-100ep √
+- Settings are saved when comming from other algorithms √
