@@ -1,7 +1,6 @@
 import { config } from "../config.js";
 import { 
-    toggleManualButtonText, removeAllCirles, removeAllPaths, toggleButtonState, toggleCursor, getRandomHSL, toggleControls, resetAllText, toggleElementDisplay, 
-    resetToInitialState} from "../utils.js";
+    toggleManualButtonText, removeAllCirles, removeAllPaths, toggleButtonState, toggleCursor, getRandomHSL, toggleControls, resetAllText, toggleElementDisplay} from "../utils.js";
 import { 
     pointRange, algorithmSelect, playBtn, pointCount, speedRange, speedCount, distance, averageCheck, geneticOptions, randomOptions } from "../dom.js";
 import { socket } from "../socket.js";
@@ -18,7 +17,7 @@ export function manualSelection() {
         config.isSelecting = true;
     }
     else {
-        if (config.points.length < 1){
+        if (config.points.length < 5){
             emitGetPoints(config.numPoints, false);
             config.isSelecting = false;
         }
