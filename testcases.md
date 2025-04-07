@@ -127,3 +127,12 @@
         - Range visuals ❌
 - Works with highest load: 200p-100ep √
 - Settings are saved when comming from other algorithms √
+
+## Page reload
+- Back to default settings
+    - Greedy √
+    - Random average √
+    - Genetic low speed √
+    - Genetic high speed ❌
+        - distance shown
+        - paths shown
