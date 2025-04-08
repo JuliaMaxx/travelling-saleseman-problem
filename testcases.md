@@ -66,7 +66,7 @@
         - Algorithm selection is disabled √
         - Calculate Average is disabled √
 - Range dissapears when average is unchecked √
-- Settings are saved when comming from other options ❌
+- Settings are saved when comming from other options √
     - Calculate Average is unckecked
 ### Genetic
 - "Play" button is enabled √
