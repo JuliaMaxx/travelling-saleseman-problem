@@ -40,6 +40,6 @@ export function setUpEventListeners(){
     greedyRange.addEventListener("input", greedyRangeInput);
     mutationRange.addEventListener("input", mutationRangeInput);
     epochRange.addEventListener("input", epochRangeInput);
-    window.addEventListener('resize', resetToInitialState);
+    window.addEventListener('resize', () => resetToInitialState(true));
     hamburgerBtn.addEventListener('click', hamburgerClick)
 }    

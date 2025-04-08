@@ -104,16 +104,21 @@ export function calculatePossiblePaths(numPoints) {
     return `Possibilities: ${mantissa} * 10^${exponent}`;
 }
 
-export function resetToInitialState(){
+export function resetToInitialState(resize=false){
     emitGetPoints(config.numPoints, false);
     socket.emit('stop_algorithm', {});
     stopTimer(config.intervalId);
     removeAllPaths();
     toggleCursor(false);
-    [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
-    toggleControls(true, true, true);
+    if (resize && algorithmSelect.value){
+        toggleControls(false, true, true)
+    } else {
+        toggleControls(true, true, true);
+    }
     resetAllText();
+    [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
     config.isPaused = false;
+    config.isSelecting = false;
     paths.forEach(path => {
         path.style.fill = getRandomHSL();
     });
@@ -128,6 +133,7 @@ export function resetAllText(){
     distance.textContent = "Distance: 0km";
     playBtn.innerText = "Play";
     toggleManualButtonText(true);
+    toggleAlgorithmOptions(algorithmSelect.value, false);
 }
 
 export function hamburgerClick(){

@@ -139,5 +139,5 @@
 
 ## Page resize
 - New map √
-- If algorithm is selected Play is enabled ❌
+- If algorithm is selected Play is enabled √
 - If no algorithm selected Play is disabled √
