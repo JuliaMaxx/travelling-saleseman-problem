@@ -80,14 +80,9 @@ export function factorial(n) {
 }
 
 export function getRandomHSL() {
-    let h;
-    // Loop to generate a hue outside the green range (80° - 160°)
-    // do {
-    h = Math.floor(Math.random() * 360);
-    // } while (h >= 70 && h <= 170);
-  
-    const s = Math.floor(Math.random() * 41) + 45;
-    const l = Math.floor(Math.random() * 10) + 16;
+    const h = Math.floor(Math.random() * 360);
+    const s = Math.floor(Math.random() * 41) + 50;
+    const l = Math.floor(Math.random() * 10) + 18;
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
 

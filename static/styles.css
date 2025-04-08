@@ -62,21 +62,14 @@ hr{
 
 /* BUTTON */
 button {
-    background-color: rgb(80, 97, 80);
+    background-color: var(--nav-color);
     border: none;
-    color: rgb(212, 198, 198);
+    color: var(--white);
     font-weight: 500;
     transition: all 0.1s ease-in-out;
 }
 button:hover {
     transform: scale(0.9);
-}
-button:disabled{
-    background-color: #5d5d5d;
-    color: #909090;
-    cursor: not-allowed;
-    pointer-events: none;
-    box-shadow: none;
 }
 
 /* NAVIGATION */
