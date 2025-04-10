@@ -1,4 +1,4 @@
-import { algorithmSelect, averageCheck, pointRange, manual } from "../dom.js";
+import { algorithmSelect, averageCheck, pointRange, manual, distance } from "../dom.js";
 import { 
     toggleButtonState, removeAllPaths, getAlgorithmParams, toggleControls, togglePlayButtonText, resetAllText, 
     toggleAlgorithmOptions} from "../utils.js";
@@ -8,6 +8,7 @@ import { config } from "../config.js";
 
 export function playAlgorithm(){
     const selectedAlgorithm = algorithmSelect.value;
+    resetAllText();
     if (selectedAlgorithm !== "random" || averageCheck.checked) {
         [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, true));
         toggleAlgorithmOptions(selectedAlgorithm, true);
@@ -59,4 +60,5 @@ export function stopAlgorithm(){
     [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, false));
     toggleControls(false, true, true);
     resetAllText();
+    distance.textContent = "Distance: 0km";
 }

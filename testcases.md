@@ -76,8 +76,7 @@
 - Pause on high speed ❌
 - Stop on high speed ❌
 - Stop resets text data √
-    - Dstance resets ❌
-- Play resets epoch data ❌
+- Play resets epoch data √
 - Distance shown √
 - Elapsed shown √
 - Epoch shown √
