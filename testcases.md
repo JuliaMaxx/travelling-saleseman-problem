@@ -112,7 +112,7 @@
         - If population < 50
             - Min 3 √
             - Max = population size √
-            - Range visuals ❌
+            - Range visuals √
     - Roulette √
 - Elite
     - Range appears when checked √
@@ -123,7 +123,7 @@
     - If population < 50
         - Min 3 √
         - Max = population size √
-        - Range visuals ❌
+        - Range visuals √
 - Works with highest load: 200p-100ep √
 - Settings are saved when comming from other algorithms √
 
