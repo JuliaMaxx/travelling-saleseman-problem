@@ -1,6 +1,7 @@
 import { 
     selectionSelect, tournamentSizeInput, eliteCheck, eliteSizeInput, populationCount, populationRange, tournamentSizeRange, eliteSizeRange, tournamentSizeCount, eliteCount, mutationCount, greedyCount, epochCount } from "../dom.js";
 import { toggleElementDisplay } from "../utils.js";
+import { updateRangeBackground } from "./general.js";
 
 export function selectionSelectChange(){
     if (selectionSelect.value === "tournament"){
@@ -20,29 +21,29 @@ export function eliteCheckChange(){
     }
 }
 
+function updateRangeInput(rangeInput, displayElement, maxLimit){
+    const currentValue = parseInt(rangeInput.value);
+    const clampedMax = Math.min(maxLimit, 50);
+    rangeInput.max = clampedMax;
+
+    if (currentValue > clampedMax) {
+        rangeInput.value = clampedMax;
+    }
+
+    displayElement.textContent = rangeInput.value;
+    updateRangeBackground(rangeInput);
+}
+
+function updateAllRanges(populationValue){
+    updateRangeInput(tournamentSizeRange, tournamentSizeCount, populationValue);
+    updateRangeInput(eliteSizeRange, eliteCount, populationValue);
+}
+
 export function populateionRangeInput(){
     const populationValue = parseInt(populationRange.value);
     populationCount.textContent = populationValue;
 
-    // Update the max value of the tournament and elite size range
-    tournamentSizeRange.max = populationValue > 50? 50: populationValue;
-    eliteSizeRange.max = populationValue > 50? 50: populationValue;
-
-    // Adjust the value of the tournament size range if necessary
-    if (parseInt(tournamentSizeRange.value) > populationValue) {
-        tournamentSizeRange.value = Math.floor(populationValue / 3);
-        tournamentSizeCount.textContent = tournamentSizeRange.value;
-    } else {
-        tournamentSizeCount.textContent = tournamentSizeRange.value;
-    }
-
-    // Adjust the value of the elite size range if necessary
-    if (parseInt(eliteSizeRange.value) > populationValue) {
-        eliteSizeRange.value = Math.floor(populationValue / 3);
-        eliteCount.textContent = tournamentSizeRange.value;
-    } else {
-        eliteCount.textContent = tournamentSizeRange.value;
-    }
+    updateAllRanges(populationValue)
 }
 
 export function tournamentSizeRangeInput(){
