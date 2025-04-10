@@ -86,7 +86,7 @@
 - Average shown in km √
 - Everything except controls, delay and color is disabled during execution √
 - Epoch range 
-    - Min 2 ❌
+    - Min 2 √
     - Max 100 √
 - Greedy Ration range
     - Min 0 √
