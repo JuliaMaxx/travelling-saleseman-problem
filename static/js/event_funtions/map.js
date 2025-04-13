@@ -1,39 +1,44 @@
 import { config } from "../config.js";
 import { svg } from "../canvas.js";
 import { updatePoints } from "../canvas.js";
-import { canvas } from "../dom.js";
 
 export function handleCanvasClick(event) {
-    const validRange = getValidRange();
     if (!config.isSelecting) return;
     if (config.points.length >= config.MAX_POINTS) {
         alert(`You can select a maximum of ${config.MAX_POINTS} points.`);
         return;
     }
-    // Get the position of the click relative to the canvas
-    const rect = svg.node().getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+
+    const pt = svg.node().createSVGPoint();
+    pt.x = event.clientX;
+    pt.y = event.clientY;
+
+    // Transform the point from screen coordinates to SVG coordinates
+    const svgPoint = pt.matrixTransform(svg.node().getScreenCTM().inverse());
+
+    const x = svgPoint.x;
+    const y = svgPoint.y;
 
     // Check if the click is within the valid range
-    if (x >= validRange.xMin && x <= validRange.xMax && y >= validRange.yMin && y <= validRange.yMax) {
-        // Add the new point to the array
+    if (x >= config.bounds.xMin && x <= config.bounds.xMax &&
+        y >= config.bounds.yMin && y <= config.bounds.yMax) {
+        
         config.points.push({ x, y });
-
-        // Update the canvas
         updatePoints();
     }
 }
 
+
 export function getValidRange(){
-    const minPaddingWidth = parseInt(0.03 * canvas.clientWidth)
-    const minPaddingHeight = parseInt(0.007 * canvas.clientHeight)
+    const bounds = config.bounds;
     // Define the range for valid point selection
     const validRange = {
-        xMin: minPaddingWidth,
-        xMax: canvas.clientWidth - minPaddingWidth,
-        yMax: canvas.clientHeight - minPaddingHeight,
-        yMin: minPaddingHeight
+        xMin: parseInt(bounds.xMin),
+        xMax: parseInt(bounds.xMax),
+        yMin: parseInt(bounds.yMin),
+        yMax: parseInt(bounds.yMax),
+        width: parseInt(bounds.width),
+        height: parseInt(bounds.height)
     };
 
     return validRange;

@@ -1,7 +1,7 @@
 import { config } from "./config.js";
 import { 
-    canvas, playBtn, pauseBtn, stopBtn, manual, averageCheck, averageRange, populationRange, greedyRange, selectionSelect, tournamentSizeRange, eliteCheck, eliteSizeRange, crossoverSelect, mutationSelect, mutationRange, epochRange, pointRange, algorithmSelect, paths, elapsedTime, bestDistance, worseDistance, averageDistance, epoch, distance, nav, hamburgerBtn } from "./dom.js";
-import { circleGroup, lineGroup } from "./canvas.js";
+     playBtn, pauseBtn, stopBtn, manual, averageCheck, averageRange, populationRange, greedyRange, selectionSelect, tournamentSizeRange, eliteCheck, eliteSizeRange, crossoverSelect, mutationSelect, mutationRange, epochRange, pointRange, algorithmSelect, paths, elapsedTime, bestDistance, worseDistance, averageDistance, epoch, distance, nav, hamburgerBtn } from "./dom.js";
+import { circleGroup, lineGroup, svg } from "./canvas.js";
 import { socket } from "./socket.js";
 import { stopTimer } from "./timer.js";
 import { toggleCursorEvent } from "./canvas.js";
@@ -9,11 +9,11 @@ import { emitGetPoints } from "./socket.js";
 
 export function toggleCursor(isSelecting){
     if (isSelecting){
-        canvas.addEventListener('mousemove', toggleCursorEvent);
+        svg.node().addEventListener('mousemove', toggleCursorEvent);
     }
     else {
-        canvas.removeEventListener('mousemove', toggleCursorEvent);
-        canvas.style.cursor = 'default';
+        svg.node().removeEventListener('mousemove', toggleCursorEvent);
+        svg.node().style.cursor = 'default';
     }
 
 }

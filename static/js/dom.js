@@ -25,6 +25,7 @@ export const pointRange = document.getElementById("pointRange");
 export const pointCount = document.getElementById("pointCount");
 export const random = document.getElementById('random');
 export const manual = document.getElementById('manual');
+export const map = document.getElementById("map");
 
 // Random algorithm
 export const randomOptions = document.getElementById("randomOptions");

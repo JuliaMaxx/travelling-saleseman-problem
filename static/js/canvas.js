@@ -1,12 +1,16 @@
 import { config } from "./config.js";
 import { possiblePaths } from "./dom.js";
-import { removeAllCirles, removeAllPaths, calculatePossiblePaths } from "./utils.js"
-import { getValidRange } from "./event_funtions/map.js";
+import { removeAllCirles, removeAllPaths, calculatePossiblePaths} from "./utils.js"
 
 export const svg = d3.select('#canvas')
-.append('svg')
-.attr('width', canvas.clientWidth)
-.attr('height', canvas.clientHeight);
+  .append('svg')
+  .attr('viewBox', `${config.bounds.xMin} ${config.bounds.yMin} ${config.bounds.width} ${config.bounds.height}`)
+  .attr('preserveAspectRatio', 'xMidYMid meet')
+  .style('position', 'absolute')
+  .style('top', '0')
+  .style('left', '0')
+  .style('width', '100%') 
+  .style('height', '100%')
 
 // Create groups for lines and circles
 export const lineGroup = svg.append('g').attr('class', 'lines');
@@ -78,16 +82,20 @@ export function updateLines(solution, points, type) {
 }
 
 export function toggleCursorEvent(event){
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left; // Adjust to canvas coordinates
-    const y = event.clientY - rect.top;
-    const validRange = getValidRange();
+    const pt = svg.node().createSVGPoint();
+    pt.x = event.clientX;
+    pt.y = event.clientY;
+    const svgPoint = pt.matrixTransform(svg.node().getScreenCTM().inverse());
 
-    // Check if the cursor is within the valid range
-    if (x >= validRange.xMin && x <= validRange.xMax && 
-        y >= validRange.yMin && y <= validRange.yMax) {
-        canvas.style.cursor = 'pointer';
+    const x = svgPoint.x;
+    const y = svgPoint.y;
+
+    if (
+        x >= config.bounds.xMin && x <= config.bounds.xMax &&
+        y >= config.bounds.yMin && y <= config.bounds.yMax
+    ) {
+        svg.style('cursor', 'pointer');
     } else {
-        canvas.style.cursor = 'default';
+        svg.style('cursor', 'default');
     }
 }
