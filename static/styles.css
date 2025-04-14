@@ -1,14 +1,14 @@
 :root{
-    --background-color: rgb(40, 53, 39);
-    --nav-color: rgb(80, 97, 80);
-    --dark-text: rgb(15, 20, 14);
-    --color-text: rgb(32, 44, 30);
-    --light-text: rgb(180, 199, 183);
+    --background-color: rgb(26, 28, 50);
+    --nav-color: rgb(80, 81, 97);
+    --dark-text: rgb(14, 15, 20);
+    --color-text: rgb(30, 33, 44);
+    --light-text: rgb(180, 191, 199);
     --white: rgb(212, 198, 198);
-    --neon: rgb(69, 160, 73);
+    --neon: rgb(60, 136, 176);
     --disabled-color: #9c9c9c;
-    --disabled-background-color: #5d5d5d;
-    --half-transparent-dark-text: rgba(32, 44, 30, 0.441);
+    --disabled-background-color: #58666f;
+    --half-transparent-dark-text: rgba(30, 34, 44, 0.441);
 }
 
 /* MAIN */

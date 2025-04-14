@@ -82,7 +82,7 @@ export function factorial(n) {
 
 export function getRandomHSL() {
     const h = Math.floor(Math.random() * 360);
-    const s = Math.floor(Math.random() * 41) + 50;
+    const s = Math.floor(Math.random() * 42) + 50;
     const l = Math.floor(Math.random() * 10) + 18;
     return `hsl(${h}, ${s}%, ${l}%)`;
 }
