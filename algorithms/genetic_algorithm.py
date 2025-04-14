@@ -2,7 +2,7 @@ import time
 import random
 import bisect
 import config
-from algorithms.algorithms import StopAlgorithmException, fitness
+from algorithms.algorithms import StopAlgorithmException, fitness, interruptible_sleep
 from algorithms.random_algorithm import random_solution
 from algorithms.greedy_algorithm import greedy_solution
 
@@ -31,28 +31,28 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 # Select parents
                 parent1, parent2 = select_parents(population, selection, tournament_size)
                 
-                time.sleep(config.VISUALIZATION_DELAY)
+                interruptible_sleep(config.VISUALIZATION_DELAY)
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
                     return
                 config.pause_event.wait()
                 
-                if not config.stop_event.is_set():
+                if not config.stop_event.is_set() and config.VISUALIZATION_DELAY > 0.01:
                     socketio.emit('update_lines', {'solution': parent1, 'points': config.POINTS, 'type':'parent'})
-                socketio.emit('update_distance', {'distance': round(fitness(parent1) * 10, 3)})  
+                    socketio.emit('update_distance', {'distance': round(fitness(parent1) * 10, 3)})  
                 
                     
-                time.sleep(config.VISUALIZATION_DELAY)
+                interruptible_sleep(config.VISUALIZATION_DELAY)
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
                     return
                 config.pause_event.wait()
                 
-                if not config.stop_event.is_set():
+                if not config.stop_event.is_set() and config.VISUALIZATION_DELAY > 0.01:
                     socketio.emit('update_lines', {'solution': parent2, 'points': config.POINTS, 'type':'parent'})
-                socketio.emit('update_distance', {'distance': round(fitness(parent2) * 10, 3)})  
+                    socketio.emit('update_distance', {'distance': round(fitness(parent2) * 10, 3)})  
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
@@ -68,7 +68,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                     case 3:  
                         child = cycle_crossover(parent1, parent2)     
                 
-                time.sleep(config.VISUALIZATION_DELAY)
+                interruptible_sleep(config.VISUALIZATION_DELAY)
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
@@ -78,7 +78,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 
                 if not config.stop_event.is_set():
                     socketio.emit('update_lines', {'solution': child, 'points': config.POINTS, 'type':'crossover'})
-                socketio.emit('update_distance', {'distance': round(fitness(child) * 10, 3)})  
+                    socketio.emit('update_distance', {'distance': round(fitness(child) * 10, 3)})  
                 
                     
                 # Apply chosen mutation
@@ -88,16 +88,16 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                     case 2:
                         mutated_child = mutation_swap(mutation_probability, child)
                         
-                time.sleep(config.VISUALIZATION_DELAY)
+                interruptible_sleep(config.VISUALIZATION_DELAY)
                 
                 # Pause / Resume / Stop
                 if config.stop_event.is_set():
                     return
                 config.pause_event.wait()
                 
-                if not config.stop_event.is_set():
+                if not config.stop_event.is_set() and config.VISUALIZATION_DELAY > 0.01:
                     socketio.emit('update_lines', {'solution': mutated_child, 'points': config.POINTS, 'type':'mutation'})
-                socketio.emit('update_distance', {'distance': round(fitness(mutated_child) * 10, 3)})  
+                    socketio.emit('update_distance', {'distance': round(fitness(mutated_child) * 10, 3)})  
                     
                 # Add to the new population
                 if tuple(mutated_child) not in existing_individuals:
@@ -109,7 +109,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
         
             best = population_info(population, socketio, n)
             
-            time.sleep(config.VISUALIZATION_DELAY)
+            interruptible_sleep(config.VISUALIZATION_DELAY)
             
             # Pause / Resume / Stop
             if config.stop_event.is_set():
@@ -118,7 +118,7 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
             
             if not config.stop_event.is_set():
                 socketio.emit('update_lines', {'solution': best, 'points': config.POINTS, 'type':'best'})
-            socketio.emit('update_distance', {'distance': round(fitness(best) * 10, 3)})  
+                socketio.emit('update_distance', {'distance': round(fitness(best) * 10, 3)})  
             
         socketio.emit('algorithm_finished', {})       
         return population

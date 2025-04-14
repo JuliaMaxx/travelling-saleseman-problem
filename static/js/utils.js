@@ -24,6 +24,7 @@ export function removeAllCirles(){
 
 export function removeAllPaths(){
     lineGroup.selectAll('path').remove();
+    distance.textContent = "Distance: 0km"; 
 }
 
 export function toggleElementDisplay(element, show){

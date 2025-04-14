@@ -1,7 +1,7 @@
 import time
 import random
 import config
-from algorithms.algorithms import fitness
+from algorithms.algorithms import fitness, interruptible_sleep
 
 # Random solution
 def random_solution(socketio):
@@ -12,11 +12,11 @@ def random_solution(socketio):
     # Ensure the solution returns to the starting city
     solution.append(solution[0])
         
-    time.sleep(config.VISUALIZATION_DELAY)
+    interruptible_sleep(config.VISUALIZATION_DELAY)
     if not config.stop_event.is_set():
-            socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
-    distance = fitness(solution)
-    socketio.emit('update_distance', {'distance': round(distance * 10, 3)})  
+        socketio.emit('update_lines', {'solution': solution, 'points': config.POINTS})
+        distance = fitness(solution)
+        socketio.emit('update_distance', {'distance': round(distance * 10, 3)})  
     return solution
 
 # Average of random solutions
@@ -28,7 +28,7 @@ def average_of_random(amount, socketio):
             return
         config.pause_event.wait()
         
-        time.sleep(config.VISUALIZATION_DELAY)
+        interruptible_sleep(config.VISUALIZATION_DELAY)
         solution = random_solution(socketio)   
         total += fitness(solution)         
     socketio.emit('algorithm_finished', {})

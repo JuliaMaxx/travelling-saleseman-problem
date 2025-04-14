@@ -1,5 +1,6 @@
 import math
 import config
+import time
 
 class StopAlgorithmException(Exception):
     pass
@@ -29,3 +30,14 @@ def fitness(solution):
             )
             total_distance += distance
     return round(total_distance, 3)
+
+# Custom sleep function that can be interupted
+def interruptible_sleep(seconds):
+    interval = 0.01  # Check every 10ms
+    waited = 0.0
+    while waited < seconds:
+        if config.stop_event.is_set():
+            return
+        config.pause_event.wait()
+        time.sleep(interval)
+        waited += interval

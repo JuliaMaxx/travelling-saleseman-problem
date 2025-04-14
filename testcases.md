@@ -73,8 +73,8 @@
 - Play/Resume √
 - Pause on low speed √
 - Stop on low speed √
-- Pause on high speed ❌
-- Stop on high speed ❌
+- Pause on high speed √
+- Stop on high speed √
 - Stop resets text data √
 - Play resets epoch data √
 - Distance shown √
@@ -132,7 +132,7 @@
     - Greedy √
     - Random average √
     - Genetic low speed √
-    - Genetic high speed ❌
+    - Genetic high speed √
         - distance shown
         - paths shown
 
