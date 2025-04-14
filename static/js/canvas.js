@@ -11,6 +11,7 @@ export const svg = d3.select('#canvas')
   .style('left', '0')
   .style('width', '100%') 
   .style('height', '100%')
+  .style('overflow', 'visible')
 
 // Create groups for lines and circles
 export const lineGroup = svg.append('g').attr('class', 'lines');
