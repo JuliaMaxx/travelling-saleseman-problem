@@ -8,7 +8,7 @@ from algorithms.random_algorithm import random_solution, average_of_random
 from algorithms.genetic_algorithm import genetic_solution
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="https://travelling-saleseman-problem.onrender.com")
 
 config.pause_event.set()
 
