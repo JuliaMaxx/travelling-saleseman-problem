@@ -25,8 +25,8 @@ def fitness(solution, session):
             
             # Calculate Distance
             distance = distance_between(
-                session['stop_event'][current_index]['x'], session['stop_event'][next_index]['x'],
-                session['stop_event'][current_index]['y'], session['stop_event'][next_index]['y']
+                session['points'][current_index]['x'], session['points'][next_index]['x'],
+                session['points'][current_index]['y'], session['points'][next_index]['y']
             )
             total_distance += distance
     return round(total_distance, 3)
