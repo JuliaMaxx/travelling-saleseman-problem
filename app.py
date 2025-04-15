@@ -87,4 +87,4 @@ def update_delay(data):
         config.VISUALIZATION_DELAY = float(data['delay']) + 0.001
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
