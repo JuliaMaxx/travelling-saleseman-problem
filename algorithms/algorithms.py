@@ -10,14 +10,14 @@ def distance_between(x1, x2, y1, y2):
     return round(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2), 3)
 
 # Calculate fitness of a given solution
-def fitness(solution):
+def fitness(solution, session):
     total_distance = 0
     if len(solution) > 1:
         for i in range(len(solution) - 1):
             # Pause / Resume / Stop
-            if config.stop_event.is_set():
+            if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-            config.pause_event.wait()
+            session['pause_event'].wait()
             
             # Calculate INDEXES
             current_index = solution[i]
@@ -25,19 +25,19 @@ def fitness(solution):
             
             # Calculate Distance
             distance = distance_between(
-                config.POINTS[current_index]['x'], config.POINTS[next_index]['x'],
-                config.POINTS[current_index]['y'], config.POINTS[next_index]['y']
+                session['stop_event'][current_index]['x'], session['stop_event'][next_index]['x'],
+                session['stop_event'][current_index]['y'], session['stop_event'][next_index]['y']
             )
             total_distance += distance
     return round(total_distance, 3)
 
 # Custom sleep function that can be interupted
-def interruptible_sleep(seconds):
+def interruptible_sleep(seconds, session):
     interval = 0.01  # Check every 10ms
     waited = 0.0
     while waited < seconds:
-        if config.stop_event.is_set():
+        if session['stop_event'].is_set():
             return
-        config.pause_event.wait()
+        session['pause_event'].wait()
         time.sleep(interval)
         waited += interval
