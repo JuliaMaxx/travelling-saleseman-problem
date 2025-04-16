@@ -5,6 +5,7 @@ import {
 import { startTimer, stopTimer } from "../timer.js";
 import { socket } from "../socket.js";
 import { config } from "../config.js";
+import { hamburgerClick } from "../utils.js";
 
 export function playAlgorithm(){
     const selectedAlgorithm = algorithmSelect.value;
@@ -19,7 +20,7 @@ export function playAlgorithm(){
         removeAllPaths();
         const params = getAlgorithmParams(selectedAlgorithm);
         if (nav.classList.contains("active")){
-            nav.classList.remove('active')
+            hamburgerClick();
         }
         socket.emit("start_algorithm", {
             algorithm: selectedAlgorithm,
@@ -37,7 +38,7 @@ export function playAlgorithm(){
     } else {
         // Resume the algorithm when paused
         if (nav.classList.contains("active")){
-            nav.classList.remove('active')
+            hamburgerClick();
         }
         socket.emit('resume_algorithm', {});
         startTimer();
