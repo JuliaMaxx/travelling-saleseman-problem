@@ -18,7 +18,9 @@ export function playAlgorithm(){
     if (!config.isPaused) {
         removeAllPaths();
         const params = getAlgorithmParams(selectedAlgorithm);
-
+        if (nav.classList.contains("active")){
+            nav.classList.remove('active')
+        }
         socket.emit("start_algorithm", {
             algorithm: selectedAlgorithm,
             points: config.numPoints,
@@ -34,6 +36,9 @@ export function playAlgorithm(){
         }
     } else {
         // Resume the algorithm when paused
+        if (nav.classList.contains("active")){
+            nav.classList.remove('active')
+        }
         socket.emit('resume_algorithm', {});
         startTimer();
         toggleControls(true, false, false);
