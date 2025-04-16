@@ -1,4 +1,4 @@
-import { algorithmSelect, averageCheck, pointRange, manual, distance } from "../dom.js";
+import { algorithmSelect, averageCheck, pointRange, manual, distance, nav } from "../dom.js";
 import { 
     toggleButtonState, removeAllPaths, getAlgorithmParams, toggleControls, togglePlayButtonText, resetAllText, 
     toggleAlgorithmOptions} from "../utils.js";
