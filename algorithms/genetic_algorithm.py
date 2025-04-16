@@ -1,7 +1,6 @@
-import time
 import random
 import bisect
-import config
+import eventlet
 from algorithms.algorithms import StopAlgorithmException, fitness, interruptible_sleep
 from algorithms.random_algorithm import random_solution
 from algorithms.greedy_algorithm import greedy_solution
@@ -17,7 +16,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
             # Pause / Resume / Stop
             if session['stop_event'].is_set():
                 return
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             new_population = []
             existing_individuals = set(new_population)
@@ -36,7 +36,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
                     return
-                session['pause_event'].wait()
+                while not session['pause_event'].is_set():
+                    eventlet.sleep(0.1)
                 
                 if not session['stop_event'].is_set() and session['visualization_delay'] > 0.01:
                     socketio.emit('update_lines', {'solution': parent1, 'points': session['points'], 'type':'parent'}, to=session['sid'])
@@ -48,7 +49,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
                     return
-                session['pause_event'].wait()
+                while not session['pause_event'].is_set():
+                    eventlet.sleep(0.1)
                 
                 if not session['stop_event'].is_set() and session['visualization_delay'] > 0.01:
                     socketio.emit('update_lines', {'solution': parent2, 'points': session['points'], 'type':'parent'}, to=session['sid'])
@@ -57,7 +59,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
                     return
-                session['pause_event'].wait()
+                while not session['pause_event'].is_set():
+                    eventlet.sleep(0.1)
             
                 # Perform chosen crossover
                 match crossover:
@@ -73,7 +76,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
                     return
-                session['pause_event'].wait()
+                while not session['pause_event'].is_set():
+                    eventlet.sleep(0.1)
                 
                 
                 if not session['stop_event'].is_set():
@@ -93,7 +97,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
                     return
-                session['pause_event'].wait()
+                while not session['pause_event'].is_set():
+                    eventlet.sleep(0.1)
                 
                 if not session['stop_event'].is_set() and session['visualization_delay'] > 0.01:
                     socketio.emit('update_lines', {'solution': mutated_child, 'points': session['points'], 'type':'mutation'}, to=session['sid'])
@@ -114,7 +119,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
             # Pause / Resume / Stop
             if session['stop_event'].is_set():
                 return
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             if not session['stop_event'].is_set():
                 socketio.emit('update_lines', {'solution': best, 'points': session['points'], 'type':'best'}, to=session['sid'])
@@ -139,7 +145,8 @@ def initial_population(size, greedy_ratio, socketio, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         starting_point = random.choice(list(range(len(session['points']))))
         population.append(greedy_solution(starting_point, socketio, additional, session))
@@ -148,7 +155,8 @@ def initial_population(size, greedy_ratio, socketio, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         population.append(random_solution(socketio, session))
         
@@ -171,7 +179,8 @@ def population_info(population, socketio, n, session):
         # Pause / Resume / Stop 
         if session['stop_event'].is_set():
             raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         distance = fitness(solution, session)
         total_distance += distance
@@ -196,7 +205,8 @@ def tournament(population, tournament_size, session):
     # Pause / Resume / Stop
     if session['stop_event'].is_set():
             raise StopAlgorithmException()
-    session['pause_event'].wait()
+    while not session['pause_event'].is_set():
+        eventlet.sleep(0.1)
     
     # Take a random sample out of population 
     contestants = random.sample(population, tournament_size)
@@ -209,7 +219,8 @@ def tournament(population, tournament_size, session):
        # Pause / Resume / Stop
        if session['stop_event'].is_set():
             raise StopAlgorithmException()
-       session['pause_event'].wait()
+       while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
          
        distance = fitness(contestant, session)
        if  distance < best_distance:
@@ -223,7 +234,8 @@ def elite_selection(population, elite_size, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         solution_fitness = fitness(solution, session)
         
@@ -246,7 +258,8 @@ def roulette_selection(population, session):
     # Pause / Resume / Stop
     if session['stop_event'].is_set():
             raise StopAlgorithmException()
-    session['pause_event'].wait()
+    while not session['pause_event'].is_set():
+        eventlet.sleep(0.1)
         
     # Calculate fitness for each solution
     distances = []
@@ -254,7 +267,8 @@ def roulette_selection(population, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
             raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         distances.append(fitness(solution, session)) 
         
     distance_of_all = sum(distances)
@@ -266,7 +280,8 @@ def roulette_selection(population, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         cumulative_sum += distance / distance_of_all
         cumulative_distances.append(cumulative_sum)
@@ -289,7 +304,8 @@ def ordered_crossover(parent1,  parent2, session):
     # Pause / Resume / Stop
     if session['stop_event'].is_set():
         raise StopAlgorithmException()
-    session['pause_event'].wait()
+    while not session['pause_event'].is_set():
+        eventlet.sleep(0.1)
         
     # Take a random slice from parent 1
     start_position = random.randint(0, len(parent1) - 1)
@@ -304,7 +320,8 @@ def ordered_crossover(parent1,  parent2, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
             raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         if x not in sub_parent1:  
             sub_parent2.append(x)
@@ -318,7 +335,8 @@ def ordered_crossover(parent1,  parent2, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         if offspring[i] is None:
             if index < len(sub_parent2):
@@ -348,7 +366,8 @@ def partially_matched_crossover(parent1, parent2, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
             raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         mapping[parent1[i]] = parent2[i]
     
     # Fill the remaining positions
@@ -356,7 +375,8 @@ def partially_matched_crossover(parent1, parent2, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         if offspring[i] is None:
             value = parent2[i]
@@ -364,7 +384,8 @@ def partially_matched_crossover(parent1, parent2, session):
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
                     raise StopAlgorithmException()
-                session['pause_event'].wait()
+                while not session['pause_event'].is_set():
+                    eventlet.sleep(0.1)
                 
                 value = mapping[value]
             offspring[i] = value
@@ -395,14 +416,16 @@ def cycle_crossover(parent1, parent2, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         # Follow the cycle until we return to the start
         while not visited[current]:
             # Pause / Resume / Stop
             if session['stop_event'].is_set():
                     raise StopAlgorithmException()
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             visited[current] = True
             # Place the element from parent1 in the offspring
@@ -415,7 +438,8 @@ def cycle_crossover(parent1, parent2, session):
             # Pause / Resume / Stop
             if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             if offspring[i] is None:
                 offspring[i] = parent2[i]
@@ -433,7 +457,8 @@ def mutation_swap(mutation_probability, child, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         # Get two random cities in the solution
         first_city_index = random.randint(1, len(solution) - 2)
@@ -452,7 +477,8 @@ def mutation_inversion(mutation_probability, child, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         # Get two random cities in the solution
         first_index = random.randint(1, len(solution) - 2)
@@ -472,7 +498,8 @@ def select_parents(population, selection, tournament_size, session):
     # Pause / Resume / Stop
     if session['stop_event'].is_set():
             raise StopAlgorithmException()
-    session['pause_event'].wait()
+    while not session['pause_event'].is_set():
+        eventlet.sleep(0.1)
     
     if selection == 1:
         selections = []
@@ -480,7 +507,8 @@ def select_parents(population, selection, tournament_size, session):
             # Pause / Resume / Stop
             if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             selections.append(roulette_selection(population, session))
         return random.sample(selections, 2)
@@ -489,7 +517,8 @@ def select_parents(population, selection, tournament_size, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
             raise StopAlgorithmException()
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         selections = []
         for _ in range(2):

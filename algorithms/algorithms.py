@@ -1,6 +1,5 @@
 import math
-import config
-import time
+import eventlet
 
 class StopAlgorithmException(Exception):
     pass
@@ -17,7 +16,8 @@ def fitness(solution, session):
             # Pause / Resume / Stop
             if session['stop_event'].is_set():
                 raise StopAlgorithmException()
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             # Calculate INDEXES
             current_index = solution[i]
@@ -38,6 +38,7 @@ def interruptible_sleep(seconds, session):
     while waited < seconds:
         if session['stop_event'].is_set():
             return
-        session['pause_event'].wait()
-        time.sleep(interval)
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
+        eventlet.sleep(interval)
         waited += interval

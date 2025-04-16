@@ -1,6 +1,5 @@
-import time
-import config
 from algorithms.algorithms import fitness, StopAlgorithmException, distance_between, interruptible_sleep
+import eventlet
 
 # Greedy algorithm to find a solution starting from a specific point
 def greedy_solution(starting_point, socketio, additional, session):
@@ -17,7 +16,8 @@ def greedy_solution(starting_point, socketio, additional, session):
             if additional:
                 raise StopAlgorithmException()
             return
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
             
         
         for i in remaining_indexes:
@@ -27,7 +27,8 @@ def greedy_solution(starting_point, socketio, additional, session):
                 if additional:
                     raise StopAlgorithmException()
                 return
-            session['pause_event'].wait()
+            while not session['pause_event'].is_set():
+                eventlet.sleep(0.1)
             
             distance = distance_between(
                 session['points'][i]['x'], session['points'][starting_point]['x'],
@@ -49,7 +50,8 @@ def greedy_solution(starting_point, socketio, additional, session):
             if additional:
                     raise StopAlgorithmException()
             return
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         if not session['stop_event'].is_set():
             # Emit the current state of the solution to the frontend

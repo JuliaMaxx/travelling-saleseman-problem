@@ -1,14 +1,14 @@
-import time
 import random
-import config
 from algorithms.algorithms import fitness, interruptible_sleep
+import eventlet
 
 # Random solution
 def random_solution(socketio, session):
     solution = list(range(len(session['points'])))
     random.shuffle(solution)
     # Wait if paused
-    session['pause_event'].wait()
+    while not session['pause_event'].is_set():
+        eventlet.sleep(0.1)
     # Ensure the solution returns to the starting city
     solution.append(solution[0])
         
@@ -26,7 +26,8 @@ def average_of_random(amount, socketio, session):
         # Pause / Resume / Stop
         if session['stop_event'].is_set():
             return
-        session['pause_event'].wait()
+        while not session['pause_event'].is_set():
+            eventlet.sleep(0.1)
         
         interruptible_sleep(session['visualization_delay'], session)
         solution = random_solution(socketio)   
