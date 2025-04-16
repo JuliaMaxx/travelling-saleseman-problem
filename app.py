@@ -19,6 +19,7 @@ user_sessions = {}
 def handle_connect():
     sid = request.sid
     user_sessions[sid] = {
+        'sid': sid,
         'points': [],
         'pause_event': threading.Event(),
         'stop_event': threading.Event(),

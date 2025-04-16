@@ -14,9 +14,9 @@ def random_solution(socketio, session):
         
     interruptible_sleep(session['visualization_delay'], session)
     if not session['stop_event'].is_set():
-        socketio.emit('update_lines', {'solution': solution, 'points': session['points']})
+        socketio.emit('update_lines', {'solution': solution, 'points': session['points']}, to=session['sid'])
         distance = fitness(solution, session)
-        socketio.emit('update_distance', {'distance': round(distance * 10, 3)})  
+        socketio.emit('update_distance', {'distance': round(distance * 10, 3)}, to=session['sid'])  
     return solution
 
 # Average of random solutions
@@ -31,7 +31,7 @@ def average_of_random(amount, socketio, session):
         interruptible_sleep(session['visualization_delay'], session)
         solution = random_solution(socketio)   
         total += fitness(solution, session)         
-    socketio.emit('algorithm_finished', {})
+    socketio.emit('algorithm_finished', {}, to=session['sid'])
     average = round(total / amount, 3)
-    socketio.emit('update_average_distance', {'distance': round(average * 10, 3)})     
+    socketio.emit('update_average_distance', {'distance': round(average * 10, 3)}, to=session['sid'])     
     return average

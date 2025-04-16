@@ -39,8 +39,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 session['pause_event'].wait()
                 
                 if not session['stop_event'].is_set() and session['visualization_delay'] > 0.01:
-                    socketio.emit('update_lines', {'solution': parent1, 'points': session['points'], 'type':'parent'})
-                    socketio.emit('update_distance', {'distance': round(fitness(parent1, session) * 10, 3)})  
+                    socketio.emit('update_lines', {'solution': parent1, 'points': session['points'], 'type':'parent'}, to=session['sid'])
+                    socketio.emit('update_distance', {'distance': round(fitness(parent1, session) * 10, 3)}, to=session['sid'])  
                 
                     
                 interruptible_sleep(session['visualization_delay'], session)
@@ -51,8 +51,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 session['pause_event'].wait()
                 
                 if not session['stop_event'].is_set() and session['visualization_delay'] > 0.01:
-                    socketio.emit('update_lines', {'solution': parent2, 'points': session['points'], 'type':'parent'})
-                    socketio.emit('update_distance', {'distance': round(fitness(parent2, session) * 10, 3)})  
+                    socketio.emit('update_lines', {'solution': parent2, 'points': session['points'], 'type':'parent'}, to=session['sid'])
+                    socketio.emit('update_distance', {'distance': round(fitness(parent2, session) * 10, 3)}, to=session['sid'])  
                 
                 # Pause / Resume / Stop
                 if session['stop_event'].is_set():
@@ -77,8 +77,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 
                 
                 if not session['stop_event'].is_set():
-                    socketio.emit('update_lines', {'solution': child, 'points': session['points'], 'type':'crossover'})
-                    socketio.emit('update_distance', {'distance': round(fitness(child, session) * 10, 3)})  
+                    socketio.emit('update_lines', {'solution': child, 'points': session['points'], 'type':'crossover'}, to=session['sid'])
+                    socketio.emit('update_distance', {'distance': round(fitness(child, session) * 10, 3)}, to=session['sid'])  
                 
                     
                 # Apply chosen mutation
@@ -96,8 +96,8 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
                 session['pause_event'].wait()
                 
                 if not session['stop_event'].is_set() and session['visualization_delay'] > 0.01:
-                    socketio.emit('update_lines', {'solution': mutated_child, 'points': session['points'], 'type':'mutation'})
-                    socketio.emit('update_distance', {'distance': round(fitness(mutated_child, session) * 10, 3)})  
+                    socketio.emit('update_lines', {'solution': mutated_child, 'points': session['points'], 'type':'mutation'}, to=session['sid'])
+                    socketio.emit('update_distance', {'distance': round(fitness(mutated_child, session) * 10, 3)}, to=session['sid'])  
                     
                 # Add to the new population
                 if tuple(mutated_child) not in existing_individuals:
@@ -117,10 +117,10 @@ def genetic_solution(population_size, greedy_ratio, crossover, number_of_epochs,
             session['pause_event'].wait()
             
             if not session['stop_event'].is_set():
-                socketio.emit('update_lines', {'solution': best, 'points': session['points'], 'type':'best'})
-                socketio.emit('update_distance', {'distance': round(fitness(best, session) * 10, 3)})  
+                socketio.emit('update_lines', {'solution': best, 'points': session['points'], 'type':'best'}, to=session['sid'])
+                socketio.emit('update_distance', {'distance': round(fitness(best, session) * 10, 3)}, to=session['sid'])  
             
-        socketio.emit('algorithm_finished', {})       
+        socketio.emit('algorithm_finished', {}, to=session['sid'])       
         return population
     except StopAlgorithmException:
         return
@@ -186,7 +186,7 @@ def population_info(population, socketio, n, session):
     # Calculate and round the average distance
     average_distance = total_distance / size if size else 0
     average_distance = round(average_distance, 3)
-    socketio.emit('update_info', {'best': round(best_distance * 10, 3), 'worse': round(worst_distance * 10, 3), 'average': round(average_distance * 10, 3), 'epoch': n})
+    socketio.emit('update_info', {'best': round(best_distance * 10, 3), 'worse': round(worst_distance * 10, 3), 'average': round(average_distance * 10, 3), 'epoch': n}, to=session['sid'])
     # Return the best solution found
     return best_solution
 

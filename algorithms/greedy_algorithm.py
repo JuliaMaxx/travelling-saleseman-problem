@@ -37,7 +37,7 @@ def greedy_solution(starting_point, socketio, additional, session):
                 shortest_distance = distance
                 next_city = i
             if not session['stop_event'].is_set():
-                socketio.emit('update_distance', {'distance': round(distance * 10, 3)})    
+                socketio.emit('update_distance', {'distance': round(distance * 10, 3)}, to=session['sid'])    
         
         solution.append(next_city)
         starting_point = next_city
@@ -53,16 +53,16 @@ def greedy_solution(starting_point, socketio, additional, session):
         
         if not session['stop_event'].is_set():
             # Emit the current state of the solution to the frontend
-            socketio.emit('update_lines', {'solution': solution, 'points': session['points']})
+            socketio.emit('update_lines', {'solution': solution, 'points': session['points']}, to=session['sid'])
         # Sleep for a short amount of time to visualize the progress
         interruptible_sleep(session['visualization_delay'], session)  
         
     solution.append(solution[0])
     if not session['stop_event'].is_set():
-        socketio.emit('update_lines', {'solution': solution, 'points': session['points'], 'type': 'best'})
+        socketio.emit('update_lines', {'solution': solution, 'points': session['points'], 'type': 'best'}, to=session['sid'])
         distance = fitness(solution, session)
-        socketio.emit('update_distance', {'distance': round(distance * 10, 3)})    
+        socketio.emit('update_distance', {'distance': round(distance * 10, 3)}, to=session['sid'])    
     if not additional:
-        socketio.emit('algorithm_finished', {})   
+        socketio.emit('algorithm_finished', {}, to=session['sid'])   
     return solution
 

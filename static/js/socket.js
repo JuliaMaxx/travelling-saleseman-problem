@@ -8,9 +8,15 @@ import { stopTimer } from "./timer.js";
 import { getValidRange } from "./event_funtions/map.js";
 import { toggleAlgorithmOptions } from "./utils.js";
     
-export const socket = io();
+export const socket = io({ transports: ['websocket'], forceNew: true });
 
 export function setUpSocketEvents(){
+    if (socket.connected) {
+        socket.disconnect();  // Close any existing socket
+    }
+
+    socket.connect();
+    
     // Handle the points data from the backend
     socket.on('receive_points', function(data) {
         config.points = data.points;
