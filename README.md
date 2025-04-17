@@ -4,8 +4,7 @@ Welcome to the **Traveling Salesman *problem***! This web application allows you
 
 ## Try it out: [Traveling Salesman problem?](https://travelling-saleseman-problem.onrender.com/)
 
-![alt text](image-1.png)
-
+![app screenshot](https://github.com/user-attachments/assets/bd0a962f-7d0d-4f07-9724-e7d97511bda5)
 
 ## 🌟 Features
 
