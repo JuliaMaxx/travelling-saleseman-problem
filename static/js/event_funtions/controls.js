@@ -1,4 +1,4 @@
-import { algorithmSelect, averageCheck, pointRange, manual, distance, nav } from "../dom.js";
+import { algorithmSelect, averageCheck, pointRange, manual, distance, nav, playBtn } from "../dom.js";
 import { 
     toggleButtonState, removeAllPaths, getAlgorithmParams, toggleControls, togglePlayButtonText, resetAllText, 
     toggleAlgorithmOptions} from "../utils.js";
@@ -9,7 +9,9 @@ import { hamburgerClick } from "../utils.js";
 
 export function playAlgorithm(){
     const selectedAlgorithm = algorithmSelect.value;
-    resetAllText();
+    if (playBtn.textContent != "Resume"){
+        resetAllText();
+    }
     if (selectedAlgorithm !== "random" || averageCheck.checked) {
         [pointRange, manual, algorithmSelect].forEach(el => toggleButtonState(el, true));
         toggleAlgorithmOptions(selectedAlgorithm, true);
