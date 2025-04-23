@@ -30,7 +30,7 @@ def average_of_random(amount, socketio, session):
             eventlet.sleep(0.1)
         
         interruptible_sleep(session['visualization_delay'], session)
-        solution = random_solution(socketio)   
+        solution = random_solution(socketio, session)   
         total += fitness(solution, session)         
     socketio.emit('algorithm_finished', {}, to=session['sid'])
     average = round(total / amount, 3)
